@@ -12,13 +12,16 @@
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
-    "lint:oxlint": "oxlint . --fix -D correctness --ignore-path .gitignore",
-    "lint:eslint": "eslint . --fix --cache",
+    "lint:oxlint": "oxlint src --fix -D correctness --ignore-path .gitignore",
+    "lint:eslint": "eslint src --fix --cache",
     "lint": "run-s lint:*",
-    "format": "prettier --write --experimental-cli src/",
-    "dev:be": "bun run "
+    "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "axios": "^1.13.2",
+    "dayjs": "^1.11.19",
+    "lrc-parser": "^1.0.1",
+    "lucide-vue-next": "^0.555.0",
     "pinia": "^3.0.4",
     "vue": "^3.5.25",
     "vue-router": "^4.6.3"
@@ -26,6 +29,7 @@
   "devDependencies": {
     "@prettier/plugin-oxc": "^0.0.5",
     "@tsconfig/node24": "^24.0.3",
+    "@types/lrc-parser": "^1.0.2",
     "@types/node": "^24.10.1",
     "@vitejs/plugin-vue": "^6.0.2",
     "@vue/eslint-config-prettier": "^10.2.0",
