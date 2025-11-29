@@ -8,3 +8,4 @@ examples/moddef.json
 bin
 anonymous_token
 .vercel
+.env

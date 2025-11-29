@@ -14,7 +14,7 @@ const anonymous_token = fs.readFileSync(
   'utf-8',
 )
 const { URLSearchParams, URL } = require('url')
-const { APP_CONF } = require('../util/config.json')
+const { APP_CONF } = require('./config.json')
 // request.debug = true // 开启可看到更详细信息
 
 const WNMCID = (function () {

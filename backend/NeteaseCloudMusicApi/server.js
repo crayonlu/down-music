@@ -8,7 +8,7 @@ const cache = require('./util/apicache').middleware
 const { cookieToJson } = require('./util/index')
 const fileUpload = require('express-fileupload')
 const decode = require('safe-decode-uri-component')
-
+require('dotenv').config()
 /**
  * The version check result.
  * @readonly
@@ -291,8 +291,8 @@ async function consturctServer(moduleDefs) {
  */
 async function serveNcmApi(options) {
   const port = Number(options.port || process.env.PORT || '3000')
+  console.log(`Port: ${port}`)
   const host = options.host || process.env.HOST || ''
-
   const checkVersionSubmission =
     options.checkVersion &&
     checkVersion().then(({ npmVersion, ourVersion, status }) => {

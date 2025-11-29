@@ -1,0 +1,19 @@
+services:
+  kugou:
+    build:
+      context: ./KuGouMusicApi
+    ports:
+      - "3001:3000"
+    environment:
+      - PORT=3000
+    restart: unless-stopped
+    container_name: kugou-music-api
+  netease:
+    build:
+      context: ./NeteaseCloudMusicApi
+    ports:
+      - "3002:3000"
+    environment:
+      - PORT=3000
+    restart: unless-stopped
+    container_name: netease-music-api
