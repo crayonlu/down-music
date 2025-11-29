@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>网易云音乐 API</title>
+  <style>
+    html, body {
+      height: 100vh;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      font-family: Arial, sans-serif;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 1em;
+      color: #42b983;
+    }
+
+    p {
+      font-size: 1.2em;
+      margin-bottom: 2em;
+      color: #666;
+    }
+
+    a {
+      color: #42b983;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    a:hover {
+      color: #329d6e;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      text-align: left;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    li {
+      margin: 0.5em 0;
+      line-height: 1.5;
+      display: flex;
+      align-items: center;
+    }
+
+    .number {
+      margin-right: 10px;
+      color: #999;
+      font-weight: bold;
+    }
+
+    .container {
+      background: #fff;
+      padding: 2em;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      max-height: 80vh; /* 设置最大高度 */
+      overflow-y: auto; /* 启用垂直滚动条 */
+    }
+    
+    .version {
+      margin-top: 0.5em;
+      font-size: 1.0em;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>网易云音乐 API <span id="api-version"></span></h1>
+    <p>当你看到这个页面时，这个服务已经成功跑起来了~</p>
+    <p class="current-url"><span id="current-url"></span></p>
+    <a href="/docs">查看文档</a>
+    <h2>例子:</h2>
+    <ul id="example-list">
+      <li><a href="./search?keywords=海阔天空">搜索</a></li>
+      <li><a href="./comment/music?id=186016&limit=1">歌曲评论</a></li>
+      <li><a href="./dj/program?rid=336355127">电台节目</a></li>
+      <li><a href="./qrlogin.html">二维码登录</a></li>
+      <li><a href="./audio_match_demo/index.html">听歌识曲</a></li>
+      <li><a href="./cloud.html">云盘上传</a></li>
+      <li><a href="./eapi_decrypt.html">eapi 参数/返回值解析</a></li>
+      <li><a href="./api.html">API 调试界面</a></li>
+      <li><a href="./playlist_import.html">歌单导入工具</a></li>
+    </ul>
+  </div>
+
+  <script src="https://fastly.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const currentUrlElement = document.getElementById('current-url');
+      currentUrlElement.textContent = window.location.href;
+
+      const exampleList = document.getElementById('example-list');
+      const items = exampleList.getElementsByTagName('li');
+
+      for (let i = 0; i < items.length; i++) {
+        const number = document.createElement('span');
+        number.className = 'number';
+        number.textContent = (i + 1) + '. ';
+        items[i].prepend(number);
+      }
+      
+      // 获取API版本号
+      axios({
+        url: '/inner/version',
+        method: 'post',
+        data: {},
+      }).then((res) => {
+        const body = res.data;
+        const version = body.data.version;
+        const apiVersionElement = document.getElementById('api-version');
+        apiVersionElement.textContent = ` v${version}`;
+      });
+    });
+  </script>
+</body>
+
+</html>
