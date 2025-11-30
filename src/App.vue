@@ -4,4 +4,5 @@
   <main class="all"></main>
 </template>
 
-<style scoped></style>
+<style scoped>
+</style>
