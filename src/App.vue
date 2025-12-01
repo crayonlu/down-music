@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import MusicPlayer from '@/components/player/MusicPlayer.vue'
   import { usePlayer } from '@/composables/usePlayer'
   import { computed, onMounted, ref, watch } from 'vue'
 
@@ -20,11 +21,8 @@
     () => isPlaying,
     playing => {
       if (audioRef.value) {
-        if (playing) {
-          audioRef.value.play()
-        } else {
-          audioRef.value.pause()
-        }
+        if (playing) audioRef.value.play()
+        else audioRef.value.pause()
       }
     },
   )
@@ -50,6 +48,8 @@
       @ended="turnToNextSong"
       @error="console.error('音频加载失败')"
     />
+    <RouterView />
+    <MusicPlayer />
   </main>
 </template>
 

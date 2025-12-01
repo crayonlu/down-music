@@ -130,6 +130,9 @@ export function usePlayer() {
       .unix(playerStore.currentTime / 1000)
       .format(playerStore.duration >= 3600000 ? 'HH:mm:ss' : 'mm:ss'),
     duration: playerStore.duration,
+    formattedDuration: dayjs
+      .unix(playerStore.duration / 1000)
+      .format(playerStore.duration >= 3600000 ? 'HH:mm:ss' : 'mm:ss'),
     volume: playerStore.volume,
     playMode: playerStore.playMode,
   }

@@ -1,0 +1,68 @@
+:root {
+  /* 背景色系 */
+  --bg-primary: #faf9f7; /* 主背景 - 温暖的米白色 */
+  --bg-secondary: #f2ede6; /* 次级背景 - 浅暖灰 */
+  --bg-elevated: #ffffff; /* 浮起元素背景 - 纯白 */
+
+  /* 文字色系 */
+  --text-primary: #3d3935; /* 主文字 - 深暖灰棕 */
+  --text-secondary: #8c8379; /* 次级文字 - 中暖灰 */
+  --text-tertiary: #b8aea3; /* 三级文字/占位符 - 浅暖灰 */
+
+  /* 边框/分隔线 */
+  --border-color: #e5ded5; /* 边框 - 暖色调分隔线 */
+
+  /* 强调色 */
+  --accent-primary: #d4a373; /* 主强调色 - 暖棕金 */
+  --accent-hover: #c89563; /* 悬停态 - 深一度的棕金 */
+
+  /* 状态色 */
+  --state-active: #d4a373; /* 激活/选中态 - 复用主强调色 */
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 3px rgba(61, 57, 53, 0.08);
+  --shadow-md: 0 4px 12px rgba(61, 57, 53, 0.12);
+}
+
+/* 暗色模式 */
+[data-theme='dark'] {
+  /* 背景色系 */
+  --bg-primary: #1a1816; /* 主背景 - 深暖黑 */
+  --bg-secondary: #252220; /* 次级背景 - 中暖黑 */
+  --bg-elevated: #2d2a27; /* 浮起元素背景 - 浅暖黑 */
+
+  /* 文字色系 */
+  --text-primary: #e8e4df; /* 主文字 - 暖白 */
+  --text-secondary: #b8aea3; /* 次级文字 - 暖灰 */
+  --text-tertiary: #7a736b; /* 三级文字/占位符 - 深暖灰 */
+
+  /* 边框/分隔线 */
+  --border-color: #3a3632; /* 边框 - 暗暖色调分隔线 */
+
+  /* 强调色 */
+  --accent-primary: #d4a373; /* 主强调色 - 暖棕金（保持一致） */
+  --accent-hover: #e0b589; /* 悬停态 - 亮一度的棕金 */
+
+  /* 状态色 */
+  --state-active: #d4a373; /* 激活/选中态 - 复用主强调色 */
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}

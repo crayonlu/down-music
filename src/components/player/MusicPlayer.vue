@@ -1,6 +1,292 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+  import { usePlayer } from '@/composables/usePlayer'
+  import {
+    Pause,
+    Play,
+    Repeat,
+    Repeat1,
+    Shuffle,
+    SkipBack,
+    SkipForward,
+    Volume2,
+  } from 'lucide-vue-next'
+  import { computed } from 'vue'
+
+  const {
+    currentSong,
+    isPlaying,
+    currentTime,
+    formattedCurrentTime,
+    duration,
+    formattedDuration,
+    volume,
+    playMode,
+    togglePlay,
+    turnToNextSong,
+    turnToPrevSong,
+    setVolume,
+    seekTo,
+    togglePlayMode,
+  } = usePlayer()
+
+  const handleSeek = (event: Event) => {
+    const target = event.target as HTMLInputElement
+    const time = Number.parseFloat(target.value)
+    seekTo(time)
+  }
+
+  const handleVolumeChange = (event: Event) => {
+    const target = event.target as HTMLInputElement
+    setVolume(Number.parseFloat(target.value))
+  }
+
+  const playModeIcon = computed(() => {
+    switch (playMode) {
+      case 'sequence':
+        return Repeat
+      case 'loop':
+        return Repeat1
+      case 'random':
+        return Shuffle
+      default:
+        return Repeat
+    }
+  })
+</script>
+
 <template>
-  <div></div>
+  <div v-if="currentSong" class="music-player">
+    <div class="song-info">
+      <img v-if="currentSong.picUrl" :src="currentSong.picUrl" alt="封面" class="cover" />
+      <div class="info">
+        <div class="name">{{ currentSong.name }}</div>
+        <div class="artist">{{ currentSong.artists.map(a => a.name).join(' ') }}</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" @click="turnToPrevSong">
+        <SkipBack :size="20" />
+      </button>
+      <button class="btn btn-play" @click="togglePlay">
+        <Play v-if="!isPlaying" :size="24" />
+        <Pause v-else :size="24" />
+      </button>
+      <button class="btn" @click="turnToNextSong">
+        <SkipForward :size="20" />
+      </button>
+    </div>
+
+    <div class="progress">
+      <span class="time">{{ formattedCurrentTime }}</span>
+      <input
+        type="range"
+        :value="currentTime / 1000"
+        :max="duration / 1000"
+        class="progress-bar"
+        @input="handleSeek"
+      />
+      <span class="time">{{ formattedDuration }}</span>
+    </div>
+
+    <div class="features">
+      <button class="btn btn-mode" @click="togglePlayMode">
+        <component :is="playModeIcon" :size="18" />
+      </button>
+      <div class="volume">
+        <Volume2 :size="18" />
+        <input
+          type="range"
+          :value="volume"
+          max="100"
+          class="volume-bar"
+          @input="handleVolumeChange"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+  .music-player {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: var(--bg-elevated);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 20px;
+    z-index: 1000;
+    box-shadow: var(--shadow-md);
+
+    .song-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 0 0 300px;
+
+      .cover {
+        width: 50px;
+        height: 50px;
+        border-radius: 4px;
+        object-fit: cover;
+      }
+
+      .info {
+        flex: 1;
+        min-width: 0;
+
+        .name {
+          font-size: 14px;
+          font-weight: 500;
+          color: var(--text-primary);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .artist {
+          font-size: 12px;
+          color: var(--text-secondary);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex: 0 0 auto;
+      align-items: center;
+
+      .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-elevated);
+        color: var(--text-primary);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+          background: var(--bg-secondary);
+        }
+
+        &.btn-play {
+          width: 44px;
+          height: 44px;
+          background: var(--accent-primary);
+          color: var(--bg-elevated);
+          border-color: var(--accent-primary);
+
+          &:hover {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+          }
+        }
+      }
+    }
+
+    .progress {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .time {
+        font-size: 12px;
+        color: var(--text-secondary);
+        min-width: 40px;
+      }
+
+      .progress-bar {
+        flex: 1;
+        height: 4px;
+        appearance: none;
+        -webkit-appearance: none;
+        background: var(--bg-secondary);
+        border-radius: 2px;
+        outline: none;
+        cursor: pointer;
+
+        &::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          width: 12px;
+          height: 12px;
+          background: var(--accent-primary);
+          border-radius: 50%;
+          cursor: pointer;
+          transition: all 0.2s;
+
+          &:hover {
+            transform: scale(1.2);
+          }
+        }
+      }
+    }
+
+    .features {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex: 0 0 auto;
+
+      .btn-mode {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        color: var(--text-secondary);
+        transition: all 0.2s;
+
+        &:hover {
+          color: var(--accent-primary);
+        }
+      }
+
+      .volume {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-secondary);
+
+        .volume-bar {
+          width: 80px;
+          height: 4px;
+          appearance: none;
+          -webkit-appearance: none;
+          background: var(--bg-secondary);
+          border-radius: 2px;
+          outline: none;
+          cursor: pointer;
+
+          &::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 10px;
+            height: 10px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+
+            &:hover {
+              transform: scale(1.2);
+            }
+          }
+        }
+      }
+    }
+  }
+</style>
