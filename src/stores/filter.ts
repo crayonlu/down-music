@@ -1,12 +1,14 @@
-import type { NetEaseSearchType } from '@/types/apis/search'
+import type { NetEaseSearchType, KuGouSearchType } from '@/types/apis/search'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import type { Platform } from '@/types/platform'
 /**
  * 筛选状态store
  * @author crayon
  * @date 2025-11-29
  */
 export const useFilterStore = defineStore('filter', () => {
+  const platform = ref<Platform>('netease')
   // 关键词 非空
   // 允许多个关键词 用空格分隔
   const keywords = ref('')
@@ -27,8 +29,9 @@ export const useFilterStore = defineStore('filter', () => {
   // 1014: 视频
   // 1018: 综合
   // 2000: 声音
-  const type = ref<NetEaseSearchType>(1)
+  const type = ref<NetEaseSearchType | KuGouSearchType>(1)
   return {
+    platform,
     keywords,
     limit,
     offset,

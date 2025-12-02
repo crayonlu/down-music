@@ -28,4 +28,9 @@ interface SongData {
   lyrics?: ParsedLyrics
 }
 
-export type { SongData, Artist, Album }
+interface SearchRes {
+  songs: SongData[]
+  total: number
+}
+
+export type { SongData, Artist, Album, SearchRes }

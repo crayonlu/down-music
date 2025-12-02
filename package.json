@@ -18,6 +18,8 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@floating-ui/vue": "^1.1.9",
+    "@vueuse/core": "^14.1.0",
     "axios": "^1.13.2",
     "dayjs": "^1.11.19",
     "lrc-parser": "^1.0.1",

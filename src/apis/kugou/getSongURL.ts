@@ -17,7 +17,7 @@ interface SongQuality {
 async function getSongURL(fileHash: string): Promise<SongQuality[]> {
   const response = await apiClient('kugou').get('/song/url/new', {
     params: {
-      filehash: fileHash,
+      hash: fileHash,
     },
   })
   return response.data.data
