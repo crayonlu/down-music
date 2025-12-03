@@ -14,7 +14,7 @@ interface SuggestCategory {
 async function searchSuggest(keywords: string): Promise<SuggestCategory[]> {
   const response = await apiClient('kugou').get('/search/suggest', {
     params: {
-      keyword: keywords,
+      keywords,
     },
   })
   return response.data.data

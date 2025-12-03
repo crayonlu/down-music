@@ -1,6 +1,7 @@
 import { usePlayerStore } from '@/stores/player'
 import { PLAY_MODES, type PlayMode } from '@/types/audio'
 import dayjs from 'dayjs'
+import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 
 /**
@@ -13,127 +14,117 @@ import { computed } from 'vue'
  */
 export function usePlayer() {
   const playerStore = usePlayerStore()
+  const { playlist, currentIndex, isPlaying, currentTime, duration, volume, playMode } =
+    storeToRefs(playerStore)
+
   const currentSong = computed(() => {
-    if (playerStore.currentIndex === -1 || playerStore.currentIndex >= playerStore.playlist.length)
-      return null
-    return playerStore.playlist[playerStore.currentIndex]
+    if (currentIndex.value === -1 || currentIndex.value >= playlist.value.length) return null
+    return playlist.value[currentIndex.value]
   })
 
   const togglePlay = () => {
-    playerStore.isPlaying = !playerStore.isPlaying
+    isPlaying.value = !isPlaying.value
   }
 
   const turnToNextSong = () => {
-    if (playerStore.playlist.length === 0) return
-    switch (playerStore.playMode) {
+    if (playlist.value.length === 0) return
+    switch (playMode.value) {
       case 'loop':
-        playerStore.currentIndex = (playerStore.currentIndex + 1) % playerStore.playlist.length
+        currentIndex.value = (currentIndex.value + 1) % playlist.value.length
         break
       case 'random':
-        playerStore.currentIndex = Math.floor(Math.random() * playerStore.playlist.length)
+        currentIndex.value = Math.floor(Math.random() * playlist.value.length)
         break
       case 'sequence':
       default:
-        if (playerStore.currentIndex < playerStore.playlist.length - 1) {
-          playerStore.currentIndex++
+        if (currentIndex.value < playlist.value.length - 1) {
+          currentIndex.value++
         } else {
           // 如果是顺序播放且已经到达最后一首歌，则回到第一首
-          playerStore.currentIndex = 0
+          currentIndex.value = 0
         }
         break
     }
   }
 
   const turnToPrevSong = () => {
-    if (playerStore.playlist.length === 0) return
-    switch (playerStore.playMode) {
+    if (playlist.value.length === 0) return
+    switch (playMode.value) {
       case 'loop':
-        playerStore.currentIndex =
-          (playerStore.currentIndex - 1 + playerStore.playlist.length) % playerStore.playlist.length
+        currentIndex.value =
+          (currentIndex.value - 1 + playlist.value.length) % playlist.value.length
         break
       case 'random':
-        playerStore.currentIndex = Math.floor(Math.random() * playerStore.playlist.length)
+        currentIndex.value = Math.floor(Math.random() * playlist.value.length)
         break
       case 'sequence':
       default:
-        if (playerStore.currentIndex > 0) {
-          playerStore.currentIndex--
+        if (currentIndex.value > 0) {
+          currentIndex.value--
         } else {
           // 如果是顺序播放且已经到达第一首歌，则跳到最后一首
-          playerStore.currentIndex = playerStore.playlist.length - 1
+          currentIndex.value = playlist.value.length - 1
         }
         break
     }
   }
 
   const turnToSpecificSong = (index: number) => {
-    if (index < 0 || index >= playerStore.playlist.length) return
-    playerStore.currentIndex = index
+    if (index < 0 || index >= playlist.value.length) return
+    currentIndex.value = index
   }
 
   // 更新当前播放时间
   const updateCurrentTime = (time: number) => {
-    playerStore.currentTime = time
+    currentTime.value = time
   }
 
   // 更新歌曲总时长
-  const updateDuration = (duration: number) => {
-    playerStore.duration = duration
-  }
-
-  // 设置音量
-  const setVolume = (volume: number) => {
-    playerStore.volume = Math.max(0, Math.min(100, volume))
+  const updateDuration = (time: number) => {
+    duration.value = time
   }
 
   // 跳转到指定时间（秒）
-  const seekTo = (time: number) => {
-    playerStore.currentTime = time * 1000
+  const seekTo = (seconds: number) => {
+    currentTime.value = seconds * 1000
   }
 
   // 切换播放模式
   const togglePlayMode = () => {
     const modes: PlayMode[] = PLAY_MODES
-    const currentModeIndex = modes.indexOf(playerStore.playMode)
+    const currentModeIndex = modes.indexOf(playMode.value)
     const nextMode = modes[(currentModeIndex + 1) % modes.length]
-    if (nextMode) playerStore.playMode = nextMode
+    if (nextMode) playMode.value = nextMode
   }
 
-  // 获取当前播放歌曲
-  const getCurrentSong = () => {
-    if (playerStore.currentIndex >= 0 && playerStore.currentIndex < playerStore.playlist.length) {
-      return playerStore.playlist[playerStore.currentIndex]
-    }
-    return null
-  }
+  // 格式化时间
+  const formattedCurrentTime = computed(() =>
+    dayjs.unix(currentTime.value / 1000).format(duration.value >= 3600000 ? 'HH:mm:ss' : 'mm:ss'),
+  )
+
+  const formattedDuration = computed(() =>
+    dayjs.unix(duration.value / 1000).format(duration.value >= 3600000 ? 'HH:mm:ss' : 'mm:ss'),
+  )
 
   return {
-    playerStore,
+    playlist,
+    currentIndex,
+    currentSong,
+    isPlaying,
+    currentTime,
+    duration,
+    volume,
+    playMode,
+    formattedCurrentTime,
+    formattedDuration,
+
     togglePlay,
     turnToNextSong,
     turnToPrevSong,
     turnToSpecificSong,
     updateCurrentTime,
     updateDuration,
-    setVolume,
     seekTo,
     togglePlayMode,
-    getCurrentSong,
-
-    playlist: playerStore.playlist,
-    currentIndex: playerStore.currentIndex,
-    currentSong,
-    isPlaying: playerStore.isPlaying,
-    currentTime: playerStore.currentTime,
-    // 格式化后的当前播放时间，格式为 mm:ss 或 HH:mm:ss
-    formattedCurrentTime: dayjs
-      .unix(playerStore.currentTime / 1000)
-      .format(playerStore.duration >= 3600000 ? 'HH:mm:ss' : 'mm:ss'),
-    duration: playerStore.duration,
-    formattedDuration: dayjs
-      .unix(playerStore.duration / 1000)
-      .format(playerStore.duration >= 3600000 ? 'HH:mm:ss' : 'mm:ss'),
-    volume: playerStore.volume,
-    playMode: playerStore.playMode,
   }
 }

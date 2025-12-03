@@ -24,24 +24,17 @@
     togglePlay,
     turnToNextSong,
     turnToPrevSong,
-    setVolume,
     seekTo,
     togglePlayMode,
   } = usePlayer()
 
-  const handleSeek = (event: Event) => {
-    const target = event.target as HTMLInputElement
-    const time = Number.parseFloat(target.value)
-    seekTo(time)
-  }
-
-  const handleVolumeChange = (event: Event) => {
-    const target = event.target as HTMLInputElement
-    setVolume(Number.parseFloat(target.value))
-  }
+  const currentTimeInSeconds = computed({
+    get: () => currentTime.value / 1000,
+    set: (value: number) => seekTo(value),
+  })
 
   const playModeIcon = computed(() => {
-    switch (playMode) {
+    switch (playMode.value) {
       case 'sequence':
         return Repeat
       case 'loop':
@@ -80,11 +73,10 @@
     <div class="progress">
       <span class="time">{{ formattedCurrentTime }}</span>
       <input
+        v-model="currentTimeInSeconds"
         type="range"
-        :value="currentTime / 1000"
         :max="duration / 1000"
         class="progress-bar"
-        @input="handleSeek"
       />
       <span class="time">{{ formattedDuration }}</span>
     </div>
@@ -95,13 +87,7 @@
       </button>
       <div class="volume">
         <Volume2 :size="18" />
-        <input
-          type="range"
-          :value="volume"
-          max="100"
-          class="volume-bar"
-          @input="handleVolumeChange"
-        />
+        <input v-model="volume" type="range" max="100" class="volume-bar" />
       </div>
     </div>
   </div>

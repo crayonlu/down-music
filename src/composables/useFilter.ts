@@ -1,12 +1,13 @@
-import { useFilterStore } from '@/stores/filter'
-import type { NetEaseSearchType, KuGouSearchType } from '@/types/apis/search'
-import type { Platform } from '@/types/platform'
-import { search as NetEaseSearch } from '@/apis/netease/search'
 import { search as KugouSearch } from '@/apis/kugou/search'
-import { searchSuggest as NetEaseSearchSuggest } from '@/apis/netease/searchSuggest'
 import { searchSuggest as KugouSearchSuggest } from '@/apis/kugou/searchSuggest'
+import { search as NetEaseSearch } from '@/apis/netease/search'
+import { searchSuggest as NetEaseSearchSuggest } from '@/apis/netease/searchSuggest'
+import { useFilterStore } from '@/stores/filter'
+import type { KuGouSearchType, NetEaseSearchType } from '@/types/apis/search'
 import type { SearchRes, SongData } from '@/types/internal/song'
+import type { Platform } from '@/types/platform'
 import { useDebounceFn } from '@vueuse/core'
+import { storeToRefs } from 'pinia'
 /**
  * Filter的组合式函数
  * 类似于React的Hook
@@ -16,41 +17,26 @@ import { useDebounceFn } from '@vueuse/core'
  */
 export function useFilter() {
   const filterStore = useFilterStore()
-
-  const setKeywords = (keywords: string) => {
-    filterStore.keywords = keywords
-  }
-
-  const setPage = (page: number) => {
-    filterStore.currentPage = page
-  }
-
-  const setPlatform = (platform: Platform) => {
-    filterStore.platform = platform
-  }
+  const { platform, keywords, type, currentPage, limit, offset } = storeToRefs(filterStore)
 
   const increasePage = () => {
-    filterStore.currentPage += 1
+    currentPage.value += 1
   }
 
   const decreasePage = () => {
-    if (filterStore.currentPage > 1) {
-      filterStore.currentPage -= 1
+    if (currentPage.value > 1) {
+      currentPage.value -= 1
     }
   }
 
-  const setType = (type: NetEaseSearchType) => {
-    filterStore.type = type
-  }
-
   const searchMusic: () => Promise<SearchRes> = async () => {
-    switch (filterStore.platform) {
+    switch (platform.value) {
       case 'netease':
         const neteaseRes = await NetEaseSearch(
-          filterStore.keywords,
-          filterStore.limit,
-          filterStore.offset,
-          filterStore.type as NetEaseSearchType,
+          keywords.value,
+          limit.value,
+          offset.value,
+          type.value as NetEaseSearchType,
         )
         return {
           songs: neteaseRes.songs.map(song => ({
@@ -73,10 +59,10 @@ export function useFilter() {
         }
       case 'kugou':
         const kugouRes = await KugouSearch(
-          filterStore.keywords,
-          filterStore.currentPage,
-          filterStore.limit,
-          filterStore.type as KuGouSearchType,
+          keywords.value,
+          currentPage.value,
+          limit.value,
+          type.value as KuGouSearchType,
         )
         return {
           songs: kugouRes.list.map(song => ({
@@ -107,9 +93,9 @@ export function useFilter() {
   }
 
   const getSearchSuggest: () => Promise<SongData[] | string[]> = async () => {
-    switch (filterStore.platform) {
+    switch (platform.value) {
       case 'netease':
-        const neteaseSuggest = await NetEaseSearchSuggest(filterStore.keywords)
+        const neteaseSuggest = await NetEaseSearchSuggest(keywords.value)
         return neteaseSuggest.songs.map(song => ({
           platform: 'netease' as Platform,
           id: song.id,
@@ -126,7 +112,7 @@ export function useFilter() {
           songUrl: '',
         }))
       case 'kugou':
-        const kugouSuggest = await KugouSearchSuggest(filterStore.keywords)
+        const kugouSuggest = await KugouSearchSuggest(keywords.value)
         return kugouSuggest[0]?.RecordDatas.map(record => record.HintInfo) || []
       default:
         return []
@@ -136,14 +122,12 @@ export function useFilter() {
   const debouncedGetSuggest = useDebounceFn(getSearchSuggest, 300)
 
   return {
-    platform: filterStore.platform,
-    setPlatform,
-    keywords: filterStore.keywords,
-    setKeywords,
-    type: filterStore.type,
-    setType,
-    currentPage: filterStore.currentPage,
-    setPage,
+    platform,
+    keywords,
+    type,
+    currentPage,
+    limit,
+    offset,
     increasePage,
     decreasePage,
     searchMusic,

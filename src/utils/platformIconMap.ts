@@ -1,17 +1,26 @@
 import { Cloud, Dog } from 'lucide-vue-next'
 
-const platformIconMap: Record<string, typeof Cloud> = {
-  netease: Cloud,
-  kugou: Dog,
-}
+const platformIconMap = {
+  netease: {
+    display: '网易云',
+    icon: Cloud,
+  },
+  kugou: {
+    display: '酷狗音乐',
+    icon: Dog,
+  },
+} as const
 
-const platformOptions = Object.keys(platformIconMap).map(key => ({
-  label: key.charAt(0).toUpperCase() + key.slice(1),
+type PlatformKey = keyof typeof platformIconMap
+
+const platformOptions = (Object.keys(platformIconMap) as Array<PlatformKey>).map(key => ({
+  label: platformIconMap[key].display,
   value: key,
 }))
 
-function getPlatformIcon(platform: string): typeof Cloud | undefined {
-  return platformIconMap[platform]
+function getPlatformIcon(platform: string) {
+  return platformIconMap[platform as PlatformKey]?.icon
 }
 
-export { platformIconMap, platformOptions, getPlatformIcon }
+export { getPlatformIcon, platformIconMap, platformOptions }
+export type { PlatformKey }

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-  import { autoUpdate, flip, offset, shift, size, useFloating } from '@floating-ui/vue'
-  import { ChevronRight } from 'lucide-vue-next'
-  import { onBeforeUnmount, onMounted, ref } from 'vue'
+  import { autoUpdate, flip, offset, shift, size, useFloating } from '@floating-ui/vue';
+import { ChevronRight } from 'lucide-vue-next';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
   defineProps({
     modelValue: {
       type: String,
@@ -65,7 +65,11 @@
 <template>
   <div class="select-wrapper" ref="reference">
     <div class="select-trigger" :class="{ 'is-active': isOpen }" @click="toggleDropdown">
-      <span>{{ modelValue || placeholder }}</span>
+      <span class="trigger-content">
+        <slot name="trigger" :modelValue="modelValue" :options="options">
+          {{ modelValue || placeholder }}
+        </slot>
+      </span>
       <ChevronRight class="arrow" :class="{ 'is-rotated': isOpen }" />
     </div>
 
@@ -78,7 +82,9 @@
           :class="{ 'is-selected': item.value === modelValue }"
           @click="selectOption(item.value)"
         >
-          {{ item.label }}
+          <slot name="option" :option="item">
+            {{ item.label }}
+          </slot>
         </div>
       </div>
     </teleport>
@@ -123,6 +129,15 @@
         }
       }
 
+      .trigger-content {
+        font-size: 14px;
+        color: var(--text-primary);
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
       .arrow {
         width: 16px;
         height: 16px;
@@ -144,7 +159,7 @@
     box-shadow: var(--shadow-md);
     overflow: hidden;
     z-index: 1000;
-    padding: 4px 0;
+    padding: 2px 0;
 
     .select-option {
       padding: 8px 12px;
@@ -153,6 +168,9 @@
       cursor: pointer;
       transition: all 0.15s;
       user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
 
       &:hover {
         background: var(--bg-secondary);

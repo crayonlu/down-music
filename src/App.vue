@@ -1,41 +1,33 @@
 <script setup lang="ts">
   import MusicPlayer from '@/components/player/MusicPlayer.vue'
   import { usePlayer } from '@/composables/usePlayer'
-  import { computed, onMounted, ref, watch } from 'vue'
+  import { onMounted, ref, watch } from 'vue'
 
-  const { getCurrentSong, updateCurrentTime, updateDuration, turnToNextSong, isPlaying, volume } =
+  const { currentSong, updateCurrentTime, updateDuration, turnToNextSong, isPlaying, volume } =
     usePlayer()
 
   const audioRef = ref<HTMLAudioElement>()
 
-  const currentSong = computed(() => getCurrentSong())
-
   watch(currentSong, newSong => {
     if (audioRef.value && newSong) {
       audioRef.value.src = newSong.songUrl
-      if (isPlaying) audioRef.value.play()
+      if (isPlaying.value) audioRef.value.play()
     }
   })
 
-  watch(
-    () => isPlaying,
-    playing => {
-      if (audioRef.value) {
-        if (playing) audioRef.value.play()
-        else audioRef.value.pause()
-      }
-    },
-  )
+  watch(isPlaying, playing => {
+    if (audioRef.value) {
+      if (playing) audioRef.value.play()
+      else audioRef.value.pause()
+    }
+  })
 
-  watch(
-    () => volume,
-    vol => {
-      if (audioRef.value) audioRef.value.volume = vol / 100
-    },
-  )
+  watch(volume, vol => {
+    if (audioRef.value) audioRef.value.volume = vol / 100
+  })
 
   onMounted(() => {
-    if (audioRef.value) audioRef.value.volume = volume / 100
+    if (audioRef.value) audioRef.value.volume = volume.value / 100
   })
 </script>
 

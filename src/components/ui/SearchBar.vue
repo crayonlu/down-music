@@ -1,28 +1,120 @@
 <script lang="ts" setup>
   import CustomBtn from '@/components/ui/CustomBtn.vue'
-  import CustomSelect from '@/components/ui/CustomSelect.vue'
-  import { useFilter } from '@/composables/useFilter'
-  import { getPlatformIcon, platformOptions } from '@/utils/platformIconMap'
-  const { keywords, platform, searchMusic, getSearchSuggest } = useFilter()
+import CustomSelect from '@/components/ui/CustomSelect.vue'
+import { useFilter } from '@/composables/useFilter'
+import type { SongData } from '@/types/internal/song'
+import { getPlatformIcon, platformOptions } from '@/utils/platformIconMap'
+import { autoUpdate, flip, offset, shift, size, useFloating } from '@floating-ui/vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
+
+  const { platform, keywords, searchMusic, getSearchSuggest } = useFilter()
+  const searchSuggest = ref<SongData[] | string[]>([])
+  const showSuggest = ref(false)
+  const inputRef = ref<HTMLInputElement>()
+  const suggestRef = ref<HTMLElement>()
+
+  const { floatingStyles } = useFloating(inputRef, suggestRef, {
+    placement: 'bottom-start',
+    whileElementsMounted: autoUpdate,
+    middleware: [
+      offset(4),
+      flip(),
+      shift(),
+      size({
+        apply({ rects, elements }) {
+          Object.assign(elements.floating.style, {
+            width: `${rects.reference.width}px`,
+          })
+        },
+      }),
+    ],
+  })
+
+  const handleGetSuggest = async () => {
+    if (keywords.value.trim()) {
+      searchSuggest.value = await getSearchSuggest()
+      showSuggest.value = searchSuggest.value.length > 0
+    } else {
+      showSuggest.value = false
+    }
+  }
+
+  const selectSuggest = (suggest: SongData | string) => {
+    if (typeof suggest === 'string') {
+      keywords.value = suggest
+    } else {
+      keywords.value = suggest.name
+    }
+    showSuggest.value = false
+    searchMusic()
+  }
+
+  const handleClickOutside = (event: MouseEvent) => {
+    const target = event.target as HTMLElement
+    if (
+      inputRef.value &&
+      suggestRef.value &&
+      !inputRef.value.contains(target) &&
+      !suggestRef.value.contains(target)
+    ) {
+      showSuggest.value = false
+    }
+  }
+
+  onMounted(() => document.addEventListener('click', handleClickOutside))
+  onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 </script>
 <template>
   <div class="search-bar">
     <CustomSelect v-model="platform" :options="platformOptions" class="platform-select">
-      <template #option="{ option }">
+      <template #trigger="{ modelValue }">
+        <component :is="getPlatformIcon(modelValue)" class="platform-icon" />
         <span class="option-content">
-          <component :is="getPlatformIcon(option.value)" class="platform-icon" />
-          {{ option.label }}
+          {{ platformOptions.find(option => option.value === modelValue)?.label }}
         </span>
       </template>
+      <template #option="{ option }">
+        <component :is="getPlatformIcon(option.value)" class="platform-icon" />
+        <span class="option-content">{{ option.label }}</span>
+      </template>
     </CustomSelect>
-    <input
-      v-model="keywords"
-      type="text"
-      class="search-input"
-      placeholder="搜索音乐、歌手、专辑..."
-      @input="getSearchSuggest"
-      @keyup.enter="searchMusic"
-    />
+    <div class="search-input-wrapper">
+      <input
+        ref="inputRef"
+        v-model="keywords"
+        type="text"
+        class="search-input"
+        placeholder="搜索音乐、歌手、专辑..."
+        @input="handleGetSuggest"
+        @keyup.enter="searchMusic"
+        @focus="keywords.trim() && handleGetSuggest()"
+      />
+      <teleport to="body">
+        <div v-if="showSuggest" ref="suggestRef" class="search-suggest" :style="floatingStyles">
+          <div
+            v-for="(suggest, index) in searchSuggest"
+            :key="index"
+            class="suggest-item"
+            @click="selectSuggest(suggest)"
+          >
+            <template v-if="typeof suggest === 'string'">
+              {{ suggest }}
+            </template>
+            <template v-else>
+              <div class="suggest-song">
+                <img v-if="suggest.picUrl" :src="suggest.picUrl" alt="" class="suggest-cover" />
+                <div class="suggest-info">
+                  <div class="suggest-name">{{ suggest.name }}</div>
+                  <div class="suggest-artist">
+                    {{ suggest.artists.map(a => a.name).join(' ') }}
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </teleport>
+    </div>
     <CustomBtn type="primary" @click="searchMusic">搜索</CustomBtn>
   </div>
 </template>
@@ -41,8 +133,13 @@
       flex: 0 0 140px;
     }
 
-    .search-input {
+    .search-input-wrapper {
       flex: 1;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
       height: 36px;
       padding: 0 12px;
       background: var(--bg-primary);
@@ -77,6 +174,69 @@
         width: 16px;
         height: 16px;
         color: var(--text-secondary);
+      }
+    }
+  }
+
+  .search-suggest {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1001;
+
+    .suggest-item {
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--text-primary);
+      font-size: 14px;
+
+      &:hover {
+        background: var(--bg-secondary);
+      }
+
+      &:not(:last-child) {
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .suggest-song {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        .suggest-cover {
+          width: 40px;
+          height: 40px;
+          border-radius: 4px;
+          object-fit: cover;
+          flex-shrink: 0;
+        }
+
+        .suggest-info {
+          flex: 1;
+          min-width: 0;
+
+          .suggest-name {
+            font-weight: 500;
+            color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-bottom: 4px;
+          }
+
+          .suggest-artist {
+            font-size: 12px;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
       }
     }
   }
