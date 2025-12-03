@@ -1,14 +1,20 @@
 <script lang="ts" setup>
   import DefaultCover from '@/assets/images/default-cover.jpg'
+  import AudioVisualizer from '@/components/player/AudioVisualizer.vue'
   import { useLyrics } from '@/composables/useLyrics'
   import { usePlayer } from '@/composables/usePlayer'
   import { getCurrentLyricIndex } from '@/utils/lyricsParser'
+  import { useElementSize } from '@vueuse/core'
   import { computed, nextTick, onMounted, ref, watch } from 'vue'
 
   const { currentSong, currentTime, seekTo, isPlaying } = usePlayer()
   const { getLyrics } = useLyrics()
 
   const lyricsContainerRef = ref<HTMLElement>()
+  const coverRef = ref<HTMLElement>()
+  const { width: coverWidth } = useElementSize(coverRef)
+  const coverRadius = computed(() => coverWidth.value / 2)
+
   const currentLyricIndex = ref(-1)
   const userScrolling = ref(false)
   const scrollTimeout = ref<number>()
@@ -79,7 +85,8 @@
 <template>
   <div class="lyrics-view">
     <div class="cover-ctn">
-      <img :src="cover" :alt="currentSong?.name || '封面'" class="cover" />
+      <AudioVisualizer :radius="coverRadius" />
+      <img ref="coverRef" :src="cover" :alt="currentSong?.name || '封面'" class="cover" />
     </div>
     <div class="lyrics-ctn" ref="lyricsContainerRef" @scroll="handleScroll">
       <div v-if="lyrics && lyrics.lines.length > 0" class="lyrics-list">
@@ -111,13 +118,18 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
 
       .cover {
         width: 70%;
         max-width: 600px;
-        border-radius: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: 50%;
         animation: rotate 20s linear infinite;
         animation-play-state: running;
+        position: relative;
+        z-index: 1;
       }
     }
 

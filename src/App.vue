@@ -66,6 +66,8 @@
     <Toaster position="top-center" :theme="theme" richColors />
     <ThemeToggle class="theme-toggle-btn" />
     <audio
+      id="global-audio"
+      crossorigin="anonymous"
       ref="audioRef"
       @timeupdate="audioRef && updateCurrentTime(audioRef.currentTime * 1000)"
       @loadedmetadata="audioRef && updateDuration(audioRef.duration * 1000)"
