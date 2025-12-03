@@ -45,8 +45,7 @@
   })
 
   watch(playMode, mode => {
-    if (audioRef.value)
-      audioRef.value.loop = mode === 'loop'
+    if (audioRef.value) audioRef.value.loop = mode === 'loop'
   })
 
   onMounted(() => {

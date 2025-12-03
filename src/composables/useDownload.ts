@@ -24,7 +24,6 @@ export function useDownload() {
     if (downloadTasks.value.has(taskId)) {
       const task = downloadTasks.value.get(taskId)
       if (task?.status === 'downloading') {
-        console.log('歌曲正在下载中')
         return
       }
     }

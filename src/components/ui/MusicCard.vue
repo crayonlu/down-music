@@ -60,7 +60,6 @@
           currentIndex.value = songIndex
           isPlaying.value = true
         } else {
-          console.log(playlist.value + '111')
           playlist.value.push(songWithUrl)
           currentIndex.value = playlist.value.length - 1
           isPlaying.value = true
