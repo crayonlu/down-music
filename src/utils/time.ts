@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
-
+import duration from 'dayjs/plugin/duration'
+dayjs.extend(duration)
 /**
  * 格式化时间
  * @param milliseconds 毫秒

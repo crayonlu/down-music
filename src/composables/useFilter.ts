@@ -43,6 +43,7 @@ export function useFilter() {
             platform: 'netease',
             id: song.id,
             name: song.name,
+            picUrl: song.al.picUrl,
             artists: song.ar.map(artist => ({
               id: artist.id,
               name: artist.name,
@@ -64,12 +65,12 @@ export function useFilter() {
           limit.value,
           type.value as KuGouSearchType,
         )
-        console.log(kugouRes.lists)
         return {
           songs: kugouRes.lists.map(song => ({
             platform: 'kugou',
             id: song.FileHash,
             name: song.OriSongName,
+            picUrl: song.Image,
             artists: song.Singers.map(artist => ({
               id: artist.id,
               name: artist.name,

@@ -4,10 +4,19 @@
   import { usePlayer } from '@/composables/usePlayer'
   import { useTheme } from '@/composables/useTheme'
   import { onMounted, ref, watch } from 'vue'
+  import { Toaster } from 'vue-sonner'
 
-  const { currentSong, updateCurrentTime, updateDuration, turnToNextSong, isPlaying, volume } =
-    usePlayer()
-  const { initTheme } = useTheme()
+  const {
+    currentSong,
+    updateCurrentTime,
+    updateDuration,
+    turnToNextSong,
+    isPlaying,
+    volume,
+    currentTime,
+    playMode,
+  } = usePlayer()
+  const { initTheme, theme } = useTheme()
 
   const audioRef = ref<HTMLAudioElement>()
 
@@ -29,14 +38,32 @@
     if (audioRef.value) audioRef.value.volume = vol / 100
   })
 
+  watch(currentTime, time => {
+    if (audioRef.value && Math.abs(audioRef.value.currentTime * 1000 - time) > 1000) {
+      audioRef.value.currentTime = time / 1000
+    }
+  })
+
+  watch(playMode, mode => {
+    if (audioRef.value)
+      audioRef.value.loop = mode === 'loop'
+  })
+
   onMounted(() => {
     initTheme()
-    if (audioRef.value) audioRef.value.volume = volume.value / 100
+    if (audioRef.value) {
+      audioRef.value.volume = volume.value / 100
+      audioRef.value.loop = playMode.value === 'loop'
+      if (currentSong.value?.songUrl) {
+        audioRef.value.src = currentSong.value.songUrl
+      }
+    }
   })
 </script>
 
 <template>
   <main class="all">
+    <Toaster position="top-center" :theme="theme" richColors />
     <ThemeToggle class="theme-toggle-btn" />
     <audio
       ref="audioRef"

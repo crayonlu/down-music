@@ -1,8 +1,8 @@
 import { usePlayerStore } from '@/stores/player'
 import { PLAY_MODES, type PlayMode } from '@/types/audio'
+import { formatTime } from '@/utils/time'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
-import { formatTime } from '@/utils/time'
 /**
  * Player的组合式函数
  * 对于音频的操作均封装在这里
@@ -29,7 +29,8 @@ export function usePlayer() {
     if (playlist.value.length === 0) return
     switch (playMode.value) {
       case 'loop':
-        currentIndex.value = (currentIndex.value + 1) % playlist.value.length
+        currentTime.value = 0
+        isPlaying.value = true
         break
       case 'random':
         currentIndex.value = Math.floor(Math.random() * playlist.value.length)
@@ -50,8 +51,8 @@ export function usePlayer() {
     if (playlist.value.length === 0) return
     switch (playMode.value) {
       case 'loop':
-        currentIndex.value =
-          (currentIndex.value - 1 + playlist.value.length) % playlist.value.length
+        currentTime.value = 0
+        isPlaying.value = true
         break
       case 'random':
         currentIndex.value = Math.floor(Math.random() * playlist.value.length)

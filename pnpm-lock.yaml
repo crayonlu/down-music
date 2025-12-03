@@ -29,12 +29,18 @@ importers:
       pinia:
         specifier: ^3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.25(typescript@5.9.3))
+      pinia-plugin-persistedstate:
+        specifier: ^4.7.1
+        version: 4.7.1(pinia@3.0.4(typescript@5.9.3)(vue@3.5.25(typescript@5.9.3)))
       vue:
         specifier: ^3.5.25
         version: 3.5.25(typescript@5.9.3)
       vue-router:
         specifier: ^4.6.3
         version: 4.6.3(vue@3.5.25(typescript@5.9.3))
+      vue-sonner:
+        specifier: ^2.0.9
+        version: 2.0.9
     devDependencies:
       '@prettier/plugin-oxc':
         specifier: ^0.0.5
@@ -1036,6 +1042,9 @@ packages:
     resolution: {integrity: sha512-N+MeXYoqr3pOgn8xfyRPREN7gHakLYjhsHhWGT3fWAiL4IkAt0iDw14QiiEm2bE30c5XX5q0FtAA3CK5f9/BUg==}
     engines: {node: '>=12'}
 
+  defu@6.1.4:
+    resolution: {integrity: sha512-mEQCMmwJu317oSz8CwdIOdwf3xMif1ttiM8LTufzc3g6kR+9Pe236twL8j3IYT1F7GfRgGcW6MWxzZjLIkuHIg==}
+
   delayed-stream@1.0.0:
     resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
     engines: {node: '>=0.4.0'}
@@ -1629,6 +1638,20 @@ packages:
     engines: {node: '>=0.10'}
     hasBin: true
 
+  pinia-plugin-persistedstate@4.7.1:
+    resolution: {integrity: sha512-WHOqh2esDlR3eAaknPbqXrkkj0D24h8shrDPqysgCFR6ghqP/fpFfJmMPJp0gETHsvrh9YNNg6dQfo2OEtDnIQ==}
+    peerDependencies:
+      '@nuxt/kit': '>=3.0.0'
+      '@pinia/nuxt': '>=0.10.0'
+      pinia: '>=3.0.0'
+    peerDependenciesMeta:
+      '@nuxt/kit':
+        optional: true
+      '@pinia/nuxt':
+        optional: true
+      pinia:
+        optional: true
+
   pinia@3.0.4:
     resolution: {integrity: sha512-l7pqLUFTI/+ESXn6k3nu30ZIzW5E2WZF/LaHJEpoq6ElcLD+wduZoB2kBN19du6K/4FDpPMazY2wJr+IndBtQw==}
     peerDependencies:
@@ -2032,6 +2055,20 @@ packages:
     resolution: {integrity: sha512-ARBedLm9YlbvQomnmq91Os7ck6efydTSpRP3nuOKCvgJOHNrhRoJDSKtee8kcL1Vf7nz6U+PMBL+hTvR3bTVQg==}
     peerDependencies:
       vue: ^3.5.0
+
+  vue-sonner@2.0.9:
+    resolution: {integrity: sha512-i6BokNlNDL93fpzNxN/LZSn6D6MzlO+i3qXt6iVZne3x1k7R46d5HlFB4P8tYydhgqOrRbIZEsnRd3kG7qGXyw==}
+    peerDependencies:
+      '@nuxt/kit': ^4.0.3
+      '@nuxt/schema': ^4.0.3
+      nuxt: ^4.0.3
+    peerDependenciesMeta:
+      '@nuxt/kit':
+        optional: true
+      '@nuxt/schema':
+        optional: true
+      nuxt:
+        optional: true
 
   vue-tsc@3.1.5:
     resolution: {integrity: sha512-L/G9IUjOWhBU0yun89rv8fKqmKC+T0HfhrFjlIml71WpfBv9eb4E9Bev8FMbyueBIU9vxQqbd+oOsVcDa5amGw==}
@@ -3042,6 +3079,8 @@ snapshots:
 
   define-lazy-prop@3.0.0: {}
 
+  defu@6.1.4: {}
+
   delayed-stream@1.0.0: {}
 
   detect-libc@1.0.3:
@@ -3568,6 +3607,12 @@ snapshots:
 
   pidtree@0.6.0: {}
 
+  pinia-plugin-persistedstate@4.7.1(pinia@3.0.4(typescript@5.9.3)(vue@3.5.25(typescript@5.9.3))):
+    dependencies:
+      defu: 6.1.4
+    optionalDependencies:
+      pinia: 3.0.4(typescript@5.9.3)(vue@3.5.25(typescript@5.9.3))
+
   pinia@3.0.4(typescript@5.9.3)(vue@3.5.25(typescript@5.9.3)):
     dependencies:
       '@vue/devtools-api': 7.7.9
@@ -3934,6 +3979,8 @@ snapshots:
     dependencies:
       '@vue/devtools-api': 6.6.4
       vue: 3.5.25(typescript@5.9.3)
+
+  vue-sonner@2.0.9: {}
 
   vue-tsc@3.1.5(typescript@5.9.3):
     dependencies:

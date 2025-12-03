@@ -7,23 +7,32 @@ import { ref } from 'vue'
  * @author crayon
  * @date 2025-12-01
  */
-export const usePlayerStore = defineStore('player', () => {
-  const playlist = ref<SongData[]>([])
-  const currentIndex = ref(-1)
-  const isPlaying = ref(false)
+export const usePlayerStore = defineStore(
+  'player',
+  () => {
+    const playlist = ref<SongData[]>([])
+    const currentIndex = ref(-1)
+    const isPlaying = ref(false)
 
-  const currentTime = ref(0)
-  const duration = ref(0)
-  const volume = ref(66)
-  const playMode = ref<PlayMode>('sequence')
+    const currentTime = ref(0)
+    const duration = ref(0)
+    const volume = ref(66)
+    const playMode = ref<PlayMode>('sequence')
 
-  return {
-    playlist,
-    currentIndex,
-    isPlaying,
-    currentTime,
-    duration,
-    volume,
-    playMode,
-  }
-})
+    return {
+      playlist,
+      currentIndex,
+      isPlaying,
+      currentTime,
+      duration,
+      volume,
+      playMode,
+    }
+  },
+  {
+    persist: {
+      storage: localStorage,
+      pick: ['playlist', 'currentIndex', 'volume', 'playMode'],
+    },
+  },
+)

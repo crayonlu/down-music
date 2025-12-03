@@ -1,21 +1,26 @@
 <script lang="ts" setup>
   import { usePlayer } from '@/composables/usePlayer'
+  import { useSongUrl } from '@/composables/useSongUrl'
   import type { SongData } from '@/types/internal/song'
   import dayjs from 'dayjs'
-  import { Download, Pause, Play, Plus } from 'lucide-vue-next'
+  import { Download, Pause, Play, Plus, Trash2 } from 'lucide-vue-next'
   import { computed } from 'vue'
+  import { toast } from 'vue-sonner'
 
   const props = defineProps<{
     song: SongData
     index?: number
+    showRemove?: boolean
   }>()
 
   const emit = defineEmits<{
     download: [song: SongData]
     addToPlaylist: [song: SongData]
+    remove: []
   }>()
 
   const { currentSong, isPlaying, playlist, currentIndex } = usePlayer()
+  const { getSongUrl } = useSongUrl()
 
   const isCurrentSong = computed(() => {
     return (
@@ -29,20 +34,41 @@
       .format(props.song.duration >= 3600000 ? 'HH:mm:ss' : 'mm:ss')
   })
 
-  const handlePlay = () => {
+  const handlePlay = async () => {
     if (isCurrentSong.value) {
       isPlaying.value = !isPlaying.value
     } else {
-      const songIndex = playlist.value.findIndex(
-        s => s.id === props.song.id && s.platform === props.song.platform,
-      )
-      if (songIndex !== -1) {
-        currentIndex.value = songIndex
-        isPlaying.value = true
-      } else {
-        playlist.value.push(props.song)
-        currentIndex.value = playlist.value.length - 1
-        isPlaying.value = true
+      try {
+        const songWithUrl = { ...props.song }
+
+        if (!songWithUrl.songUrl) {
+          toast.loading('获取播放链接...', { id: 'play' })
+          songWithUrl.songUrl = await getSongUrl(props.song)
+          toast.dismiss('play')
+        }
+
+        if (!songWithUrl.songUrl) {
+          toast.error('无法获取播放链接')
+          return
+        }
+
+        const songIndex = playlist.value.findIndex(
+          s => s.id === props.song.id && s.platform === props.song.platform,
+        )
+        if (songIndex !== -1) {
+          playlist.value[songIndex] = songWithUrl
+          currentIndex.value = songIndex
+          isPlaying.value = true
+        } else {
+          console.log(playlist.value + '111')
+          playlist.value.push(songWithUrl)
+          currentIndex.value = playlist.value.length - 1
+          isPlaying.value = true
+        }
+      } catch (error) {
+        toast.error('播放失败', {
+          description: error instanceof Error ? error.message : '未知错误',
+        })
       }
     }
   }
@@ -56,9 +82,16 @@
       s => s.id === props.song.id && s.platform === props.song.platform,
     )
     if (!exists) {
+      toast.success('已添加到播放列表')
       playlist.value.push(props.song)
+    } else {
+      toast.info('歌曲已在播放列表中')
     }
     emit('addToPlaylist', props.song)
+  }
+
+  const handleRemove = () => {
+    emit('remove')
   }
 </script>
 <template>
@@ -85,11 +118,19 @@
     <div class="duration">{{ formattedDuration }}</div>
 
     <div class="actions">
-      <button class="action-btn" title="添加到播放列表" @click="handleAddToPlaylist">
+      <button
+        v-if="!showRemove"
+        class="action-btn"
+        title="添加到播放列表"
+        @click="handleAddToPlaylist"
+      >
         <Plus :size="18" />
       </button>
       <button class="action-btn" title="下载" @click="handleDownload">
         <Download :size="18" />
+      </button>
+      <button v-if="showRemove" class="action-btn remove" title="从列表移除" @click="handleRemove">
+        <Trash2 :size="18" />
       </button>
     </div>
   </div>
@@ -245,6 +286,12 @@
           background: var(--bg-primary);
           border-color: var(--accent-primary);
           color: var(--accent-primary);
+        }
+
+        &.remove:hover {
+          background: #fee2e2;
+          border-color: #ef4444;
+          color: #ef4444;
         }
 
         &:active {

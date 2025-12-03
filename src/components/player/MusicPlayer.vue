@@ -50,7 +50,7 @@
 <template>
   <div v-if="currentSong" class="music-player">
     <div class="song-info">
-      <img v-if="currentSong.picUrl" :src="currentSong.picUrl" alt="封面" class="cover" />
+      <img v-if="currentSong.picUrl || currentSong.album?.picUrl" :src="currentSong.picUrl || currentSong.album?.picUrl" alt="封面" class="cover" />
       <div class="info">
         <div class="name">{{ currentSong.name }}</div>
         <div class="artist">{{ currentSong.artists.map(a => a.name).join(' ') }}</div>

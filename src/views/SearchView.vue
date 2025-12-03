@@ -6,6 +6,7 @@
   import type { SongData } from '@/types/internal/song'
   import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-vue-next'
   import { ref } from 'vue'
+  import { toast } from 'vue-sonner'
 
   const { currentPage, increasePage, decreasePage, searchMusic } = useFilter()
   const { downloadSong } = useDownload()
@@ -23,7 +24,9 @@
       searchResults.value = result.songs
       total.value = result.total
     } catch (error) {
-      console.error('搜索失败:', error)
+      toast.error('搜索失败', {
+        description: error instanceof Error ? error.message : '未知错误',
+      })
     } finally {
       loading.value = false
     }
@@ -41,24 +44,23 @@
 
   const handleDownload = async (song: SongData) => {
     if (downloading.value) {
-      console.log('已有歌曲正在下载，请稍后...')
+      toast.warning('请等待当前下载完成')
       return
     }
 
     try {
       downloading.value = true
+      toast.loading('下载中...', { id: 'download' })
       await downloadSong(song)
-      console.log('下载完成:', song.name)
+      toast.success('下载完成', { id: 'download' })
     } catch (error) {
-      console.error('下载失败:', error)
-      alert(`下载失败: ${error instanceof Error ? error.message : '未知错误'}`)
+      toast.error('下载失败', {
+        id: 'download',
+        description: error instanceof Error ? error.message : '未知错误',
+      })
     } finally {
       downloading.value = false
     }
-  }
-
-  const handleAddToPlaylist = (song: SongData) => {
-    console.log('添加到播放列表:', song)
   }
 </script>
 <template>
@@ -100,7 +102,6 @@
           :song="song"
           :index="index"
           @download="handleDownload"
-          @add-to-playlist="handleAddToPlaylist"
         />
       </div>
 

@@ -1,7 +1,6 @@
-import { getSongURL as getKugouSongURL } from '@/apis/kugou/getSongURL'
-import { getSongURL as getNeteaseSongURL } from '@/apis/netease/getSongURL'
 import type { SongData } from '@/types/internal/song'
 import { ref } from 'vue'
+import { useSongUrl } from './useSongUrl'
 
 interface DownloadTask {
   song: SongData
@@ -17,36 +16,8 @@ interface DownloadTask {
  */
 export function useDownload() {
   const downloadTasks = ref<Map<string, DownloadTask>>(new Map())
+  const { getSongUrl } = useSongUrl()
 
-  /**
-   * 获取歌曲的下载URL
-   */
-  const getSongDownloadUrl = async (song: SongData): Promise<string> => {
-    switch (song.platform) {
-      case 'netease': {
-        const data = await getNeteaseSongURL(Number(song.id), 0)
-        return data[0] ? data[0].url : ''
-      }
-      case 'kugou': {
-        const qualities = await getKugouSongURL(song.id as string)
-        // 选择最高质量的音频
-        if (qualities.length > 0) {
-          const bestQuality = qualities[0]
-          if (bestQuality) {
-            const trackerUrl = bestQuality.info.tracker_url[0] || ''
-            return `${trackerUrl}${bestQuality.hash}.${bestQuality.info.extname}`
-          }
-        }
-        throw new Error('未找到可用的下载链接')
-      }
-      default:
-        throw new Error('不支持的平台')
-    }
-  }
-
-  /**
-   * 下载歌曲
-   */
   const downloadSong = async (song: SongData) => {
     const taskId = `${song.platform}-${song.id}`
 
@@ -68,8 +39,7 @@ export function useDownload() {
     try {
       task.status = 'downloading'
 
-      const url = await getSongDownloadUrl(song)
-
+      const url = await getSongUrl(song)
       if (!url) {
         throw new Error('获取下载链接失败')
       }
