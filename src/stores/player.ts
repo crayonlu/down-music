@@ -32,7 +32,7 @@ export const usePlayerStore = defineStore(
   {
     persist: {
       storage: localStorage,
-      pick: ['playlist', 'currentIndex', 'volume', 'playMode'],
+      pick: ['playlist', 'currentIndex', 'volume', 'playMode', 'currentTime'],
     },
   },
 )

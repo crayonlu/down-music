@@ -1,7 +1,7 @@
 import { apiClient } from '../base'
 
 async function getPrefix(hash: string) {
-  const response = await apiClient('kugou').get('/search/lyrics', {
+  const response = await apiClient('kugou').get('/search/lyric', {
     params: {
       hash,
     },

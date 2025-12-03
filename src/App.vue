@@ -55,6 +55,7 @@
       audioRef.value.loop = playMode.value === 'loop'
       if (currentSong.value?.songUrl) {
         audioRef.value.src = currentSong.value.songUrl
+        audioRef.value.currentTime = currentTime.value / 1000
       }
     }
   })

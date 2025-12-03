@@ -1,6 +1,7 @@
 <script lang="ts" setup>
   import { usePlayer } from '@/composables/usePlayer'
   import {
+    ListMusic,
     Pause,
     Play,
     Repeat,
@@ -11,6 +12,9 @@
     Volume2,
   } from 'lucide-vue-next'
   import { computed } from 'vue'
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter()
 
   const {
     currentSong,
@@ -77,18 +81,24 @@
 
     <div class="progress">
       <span class="time">{{ formattedCurrentTime }}</span>
-      <input
-        v-model="currentTimeInSeconds"
-        type="range"
-        :max="duration / 1000"
-        class="progress-bar"
-      />
+      <div class="progress-container">
+        <input
+          v-model="currentTimeInSeconds"
+          type="range"
+          :max="duration / 1000"
+          class="progress-bar"
+          :style="{ '--progress': `${(currentTimeInSeconds / (duration / 1000)) * 100}%` }"
+        />
+      </div>
       <span class="time">{{ formattedDuration }}</span>
     </div>
 
     <div class="features">
       <button class="btn btn-mode" @click="togglePlayMode">
         <component :is="playModeIcon" :size="18" />
+      </button>
+      <button class="btn btn-lyrics" @click="router.push('/lyrics')" title="歌词">
+        <ListMusic :size="18" />
       </button>
       <div class="volume">
         <Volume2 :size="18" />
@@ -199,15 +209,29 @@
         min-width: 40px;
       }
 
-      .progress-bar {
+      .progress-container {
         flex: 1;
+        display: flex;
+        align-items: center;
+        position: relative;
+      }
+
+      .progress-bar {
+        width: 100%;
         height: 4px;
         appearance: none;
         -webkit-appearance: none;
-        background: var(--bg-secondary);
+        background: linear-gradient(
+          to right,
+          var(--accent-primary) 0%,
+          var(--accent-primary) var(--progress),
+          var(--bg-secondary) var(--progress),
+          var(--bg-secondary) 100%
+        );
         border-radius: 2px;
         outline: none;
         cursor: pointer;
+        transition: background 0.1s linear;
 
         &::-webkit-slider-thumb {
           -webkit-appearance: none;
@@ -215,6 +239,20 @@
           height: 12px;
           background: var(--accent-primary);
           border-radius: 50%;
+          cursor: pointer;
+          transition: all 0.2s;
+
+          &:hover {
+            transform: scale(1.2);
+          }
+        }
+
+        &::-moz-range-thumb {
+          width: 12px;
+          height: 12px;
+          background: var(--accent-primary);
+          border-radius: 50%;
+          border: none;
           cursor: pointer;
           transition: all 0.2s;
 
@@ -232,6 +270,22 @@
       flex: 0 0 auto;
 
       .btn-mode {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        color: var(--text-secondary);
+        transition: all 0.2s;
+
+        &:hover {
+          color: var(--accent-primary);
+        }
+      }
+
+      .btn-lyrics {
         display: flex;
         align-items: center;
         justify-content: center;

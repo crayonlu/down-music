@@ -42,9 +42,7 @@
         const songWithUrl = { ...props.song }
 
         if (!songWithUrl.songUrl) {
-          toast.loading('获取播放链接...', { id: 'play' })
           songWithUrl.songUrl = await getSongUrl(props.song)
-          toast.dismiss('play')
         }
 
         if (!songWithUrl.songUrl) {
@@ -76,13 +74,30 @@
     emit('download', props.song)
   }
 
-  const handleAddToPlaylist = () => {
+  const handleAddToPlaylist = async () => {
     const exists = playlist.value.some(
       s => s.id === props.song.id && s.platform === props.song.platform,
     )
     if (!exists) {
-      toast.success('已添加到播放列表')
-      playlist.value.push(props.song)
+      try {
+        const songWithUrl = { ...props.song }
+
+        if (!songWithUrl.songUrl) {
+          songWithUrl.songUrl = await getSongUrl(props.song)
+        }
+
+        if (!songWithUrl.songUrl) {
+          toast.error('无法获取播放链接')
+          return
+        }
+
+        toast.success('已添加到播放列表')
+        playlist.value.push(songWithUrl)
+      } catch (error) {
+        toast.error('添加失败', {
+          description: error instanceof Error ? error.message : '未知错误',
+        })
+      }
     } else {
       toast.info('歌曲已在播放列表中')
     }

@@ -14,22 +14,16 @@ const router = createRouter({
       meta: { title: '搜索音乐' },
     },
     {
-      path: '/download',
-      name: 'Download',
-      component: () => import('@/views/DownloadView.vue'),
-      meta: { title: '下载列表' },
-    },
-    {
       path: '/playlist',
       name: 'Playlist',
       component: () => import('@/views/PlaylistView.vue'),
       meta: { title: '播放列表' },
     },
     {
-      path: '/settings',
-      name: 'Settings',
-      component: () => import('@/views/SettingsView.vue'),
-      meta: { title: '设置' },
+      path: '/lyrics',
+      name: 'Lyrics',
+      component: () => import('@/views/LyricsView.vue'),
+      meta: { title: '歌词显示' },
     },
   ],
 })
