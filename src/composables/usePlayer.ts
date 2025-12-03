@@ -1,9 +1,8 @@
 import { usePlayerStore } from '@/stores/player'
 import { PLAY_MODES, type PlayMode } from '@/types/audio'
-import dayjs from 'dayjs'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
-
+import { formatTime } from '@/utils/time'
 /**
  * Player的组合式函数
  * 对于音频的操作均封装在这里
@@ -99,11 +98,11 @@ export function usePlayer() {
 
   // 格式化时间
   const formattedCurrentTime = computed(() =>
-    dayjs.unix(currentTime.value / 1000).format(duration.value >= 3600000 ? 'HH:mm:ss' : 'mm:ss'),
+    formatTime(currentTime.value),
   )
 
   const formattedDuration = computed(() =>
-    dayjs.unix(duration.value / 1000).format(duration.value >= 3600000 ? 'HH:mm:ss' : 'mm:ss'),
+    formatTime(duration.value),
   )
 
   return {

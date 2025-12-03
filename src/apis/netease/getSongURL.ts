@@ -12,7 +12,7 @@ interface SongURLData {
   time: number
 }
 
-async function getSongURL(id: number, fee: number): Promise<SongURLData> {
+async function getSongURL(id: number, fee: number): Promise<SongURLData[]> {
   const level = fee ? 'exhigh' : 'hires'
   const response = await apiClient('netease').get('/song/url/v1', {
     params: {

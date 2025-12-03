@@ -133,16 +133,6 @@ function getCurrentLyric(lyrics: ParsedLyrics, currentTime: number): LyricLine |
 }
 
 /**
- * 格式化时间显示
- * @param time 时间（毫秒）
- * @returns 格式化的时间字符串 mm:ss
- */
-function formatTime(time: number): string {
-  const timeDuration = dayjs.duration(time)
-  return timeDuration.format('mm:ss')
-}
-
-/**
  * 获取歌词行的时间范围（用于高亮显示）
  * @author crayon
  * @date 2025-11-29
@@ -166,6 +156,6 @@ function getLyricTimeRange(
   return { startTime, endTime }
 }
 
-export { parseLyrics, getCurrentLyricIndex, getCurrentLyric, formatTime, getLyricTimeRange }
+export { parseLyrics, getCurrentLyricIndex, getCurrentLyric, getLyricTimeRange }
 
 export type { ParsedLyrics, LyricLine }

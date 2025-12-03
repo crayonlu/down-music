@@ -64,12 +64,13 @@ export function useFilter() {
           limit.value,
           type.value as KuGouSearchType,
         )
+        console.log(kugouRes.lists)
         return {
-          songs: kugouRes.list.map(song => ({
+          songs: kugouRes.lists.map(song => ({
             platform: 'kugou',
             id: song.FileHash,
             name: song.OriSongName,
-            artists: song.Singer.map(artist => ({
+            artists: song.Singers.map(artist => ({
               id: artist.id,
               name: artist.name,
             })),

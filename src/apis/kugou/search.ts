@@ -3,7 +3,7 @@ import { apiClient } from '../base'
 
 interface SearchRes {
   total: number
-  list: Array<{
+  lists: Array<{
     Image: string
     AlbumID: string
     AlbumName: string
@@ -12,7 +12,7 @@ interface SearchRes {
       FileSize: number
       TimeLength: number
     }
-    Singer: Array<{
+    Singers: Array<{
       id: number
       name: string
     }>

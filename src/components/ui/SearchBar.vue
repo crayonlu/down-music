@@ -1,13 +1,17 @@
 <script lang="ts" setup>
   import CustomBtn from '@/components/ui/CustomBtn.vue'
-import CustomSelect from '@/components/ui/CustomSelect.vue'
-import { useFilter } from '@/composables/useFilter'
-import type { SongData } from '@/types/internal/song'
-import { getPlatformIcon, platformOptions } from '@/utils/platformIconMap'
-import { autoUpdate, flip, offset, shift, size, useFloating } from '@floating-ui/vue'
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+  import CustomSelect from '@/components/ui/CustomSelect.vue'
+  import { useFilter } from '@/composables/useFilter'
+  import type { SongData } from '@/types/internal/song'
+  import { getPlatformIcon, platformOptions } from '@/utils/platformIconMap'
+  import { autoUpdate, flip, offset, shift, size, useFloating } from '@floating-ui/vue'
+  import { onBeforeUnmount, onMounted, ref } from 'vue'
 
-  const { platform, keywords, searchMusic, getSearchSuggest } = useFilter()
+  const emit = defineEmits<{
+    search: []
+  }>()
+
+  const { platform, keywords, getSearchSuggest } = useFilter()
   const searchSuggest = ref<SongData[] | string[]>([])
   const showSuggest = ref(false)
   const inputRef = ref<HTMLInputElement>()
@@ -46,7 +50,12 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
       keywords.value = suggest.name
     }
     showSuggest.value = false
-    searchMusic()
+    emit('search')
+  }
+
+  const handleSearch = () => {
+    showSuggest.value = false
+    emit('search')
   }
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -86,7 +95,7 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
         class="search-input"
         placeholder="搜索音乐、歌手、专辑..."
         @input="handleGetSuggest"
-        @keyup.enter="searchMusic"
+        @keyup.enter="handleSearch"
         @focus="keywords.trim() && handleGetSuggest()"
       />
       <teleport to="body">
@@ -115,7 +124,7 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
         </div>
       </teleport>
     </div>
-    <CustomBtn type="primary" @click="searchMusic">搜索</CustomBtn>
+    <CustomBtn type="primary" @click="handleSearch">搜索</CustomBtn>
   </div>
 </template>
 
