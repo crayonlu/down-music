@@ -97,13 +97,9 @@ export function usePlayer() {
   }
 
   // 格式化时间
-  const formattedCurrentTime = computed(() =>
-    formatTime(currentTime.value),
-  )
+  const formattedCurrentTime = computed(() => formatTime(currentTime.value))
 
-  const formattedDuration = computed(() =>
-    formatTime(duration.value),
-  )
+  const formattedDuration = computed(() => formatTime(duration.value))
 
   return {
     playlist,

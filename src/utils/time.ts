@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs from 'dayjs'
 
 /**
  * 格式化时间
@@ -6,7 +6,7 @@ import dayjs from "dayjs";
  * @returns HH:mm:ss / mm:ss
  */
 const formatTime = (milliseconds: number): string => {
-  return dayjs.duration(milliseconds).format(milliseconds >= 3600000 ? 'HH:mm:ss' : 'mm:ss');
+  return dayjs.duration(milliseconds).format(milliseconds >= 3600000 ? 'HH:mm:ss' : 'mm:ss')
 }
 
-export { formatTime };
+export { formatTime }

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-  import { autoUpdate, flip, offset, shift, size, useFloating } from '@floating-ui/vue';
-import { ChevronRight } from 'lucide-vue-next';
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+  import { autoUpdate, flip, offset, shift, size, useFloating } from '@floating-ui/vue'
+  import { ChevronRight } from 'lucide-vue-next'
+  import { onBeforeUnmount, onMounted, ref } from 'vue'
   defineProps({
     modelValue: {
       type: String,

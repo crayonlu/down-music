@@ -1,10 +1,13 @@
 <script setup lang="ts">
   import MusicPlayer from '@/components/player/MusicPlayer.vue'
+  import ThemeToggle from '@/components/ui/ThemeToggle.vue'
   import { usePlayer } from '@/composables/usePlayer'
+  import { useTheme } from '@/composables/useTheme'
   import { onMounted, ref, watch } from 'vue'
 
   const { currentSong, updateCurrentTime, updateDuration, turnToNextSong, isPlaying, volume } =
     usePlayer()
+  const { initTheme } = useTheme()
 
   const audioRef = ref<HTMLAudioElement>()
 
@@ -27,12 +30,14 @@
   })
 
   onMounted(() => {
+    initTheme()
     if (audioRef.value) audioRef.value.volume = volume.value / 100
   })
 </script>
 
 <template>
   <main class="all">
+    <ThemeToggle class="theme-toggle-btn" />
     <audio
       ref="audioRef"
       @timeupdate="audioRef && updateCurrentTime(audioRef.currentTime * 1000)"
@@ -45,4 +50,11 @@
   </main>
 </template>
 
-<style scoped></style>
+<style scoped>
+  .theme-toggle-btn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 1001;
+  }
+</style>
