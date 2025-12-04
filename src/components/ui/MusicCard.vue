@@ -280,8 +280,9 @@
 
   @media (max-width: 768px) {
     .music-card {
-      grid-template-columns: 50px 1fr 80px;
+      grid-template-columns: 45px 1fr 70px 80px;
       gap: 12px;
+      padding: 10px;
 
       .index,
       .album {
@@ -290,6 +291,63 @@
 
       .actions {
         opacity: 1;
+        gap: 6px;
+
+        .action-btn {
+          width: 28px;
+          height: 28px;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .music-card {
+      grid-template-columns: 45px 1fr 70px 80px;
+      gap: 10px;
+      padding: 8px 10px;
+
+      .cover-wrapper {
+        width: 45px;
+        height: 45px;
+
+        .cover-overlay .play-btn {
+          width: 28px;
+          height: 28px;
+
+          svg {
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+
+      .info {
+        .name {
+          font-size: 13px;
+        }
+
+        .artist {
+          font-size: 11px;
+        }
+      }
+
+      .duration {
+        font-size: 12px;
+      }
+
+      .actions {
+        gap: 4px;
+
+        .action-btn {
+          width: 26px;
+          height: 26px;
+
+          svg {
+            width: 15px;
+            height: 15px;
+          }
+        }
       }
     }
   }

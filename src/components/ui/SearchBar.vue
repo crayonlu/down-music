@@ -249,4 +249,60 @@
       }
     }
   }
+
+  @media (max-width: 768px) {
+    .search-bar {
+      gap: 10px;
+      padding: 12px;
+
+      .platform-select {
+        flex: 0 0 70px;
+        .option-content {
+          display: none;
+        }
+      }
+
+      .search-input-wrapper {
+        width: 100%;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .search-bar {
+      padding: 10px;
+      gap: 8px;
+
+      .search-input {
+        height: 34px;
+        font-size: 13px;
+      }
+    }
+
+    .search-suggest {
+      max-height: 300px;
+
+      .suggest-item {
+        padding: 8px 10px;
+        font-size: 13px;
+
+        .suggest-song {
+          .suggest-cover {
+            width: 35px;
+            height: 35px;
+          }
+
+          .suggest-info {
+            .suggest-name {
+              font-size: 13px;
+            }
+
+            .suggest-artist {
+              font-size: 11px;
+            }
+          }
+        }
+      }
+    }
+  }
 </style>

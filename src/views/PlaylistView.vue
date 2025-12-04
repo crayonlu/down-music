@@ -213,10 +213,29 @@
   @media (max-width: 768px) {
     .playlist-view {
       padding: 16px;
+      padding-bottom: 100px;
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+
+        .title {
+          h1 {
+            font-size: 20px;
+          }
+        }
+
+        .clear-btn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
 
       .playlist-container {
         .table-header {
-          grid-template-columns: 50px 1fr 80px;
+          padding: 12px 10px;
+          grid-template-columns: 45px 1fr 60px 80px;
 
           .col-index,
           .col-album {
@@ -226,7 +245,28 @@
 
         .playlist-list .playlist-item {
           :deep(.music-card) {
-            grid-template-columns: 50px 1fr 120px;
+            grid-template-columns: 45px 1fr 70px 80px;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .playlist-view {
+      padding: 12px;
+
+      .header {
+        .title {
+          gap: 8px;
+
+          h1 {
+            font-size: 18px;
+          }
+
+          .count {
+            font-size: 12px;
+            padding: 3px 10px;
           }
         }
       }

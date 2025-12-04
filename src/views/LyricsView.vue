@@ -5,6 +5,7 @@
   import { usePlayer } from '@/composables/usePlayer'
   import { getCurrentLyricIndex } from '@/utils/lyricsParser'
   import { useElementSize } from '@vueuse/core'
+  import { Disc3 } from 'lucide-vue-next'
   import { computed, nextTick, onMounted, ref, watch } from 'vue'
 
   const { currentSong, currentTime, seekTo, isPlaying } = usePlayer()
@@ -18,6 +19,7 @@
   const currentLyricIndex = ref(-1)
   const userScrolling = ref(false)
   const scrollTimeout = ref<number>()
+  const showCover = ref(false)
 
   watch(
     currentSong,
@@ -75,6 +77,10 @@
     }, 3000)
   }
 
+  const toggleView = () => {
+    showCover.value = !showCover.value
+  }
+
   onMounted(() => {
     if (lyrics.value) {
       currentLyricIndex.value = getCurrentLyricIndex(lyrics.value, currentTime.value)
@@ -83,12 +89,20 @@
   })
 </script>
 <template>
-  <div class="lyrics-view">
-    <div class="cover-ctn">
+  <div class="lyrics-view" :class="{ 'mobile-lyrics-mode': !showCover }">
+    <button class="toggle-view-btn" @click="toggleView">
+      <Disc3 :size="20" />
+    </button>
+    <div class="cover-ctn" :class="{ 'mobile-hidden': !showCover }">
       <AudioVisualizer :radius="coverRadius" />
       <img ref="coverRef" :src="cover" :alt="currentSong?.name || '封面'" class="cover" />
     </div>
-    <div class="lyrics-ctn" ref="lyricsContainerRef" @scroll="handleScroll">
+    <div
+      class="lyrics-ctn"
+      :class="{ 'mobile-fullscreen': !showCover }"
+      ref="lyricsContainerRef"
+      @scroll="handleScroll"
+    >
       <div v-if="lyrics && lyrics.lines.length > 0" class="lyrics-list">
         <div
           v-for="(line, index) in lyrics.lines"
@@ -112,6 +126,11 @@
     height: calc(100dvh - 80px);
     width: 100dvw;
     display: flex;
+    position: relative;
+
+    .toggle-view-btn {
+      display: none;
+    }
 
     .cover-ctn {
       flex: 2;
@@ -191,6 +210,136 @@
         width: 100%;
         color: var(--text-secondary);
         font-size: 18px;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .lyrics-view {
+      .toggle-view-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        width: 44px;
+        height: 44px;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-color);
+        border-radius: 50%;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.2s;
+        z-index: 100;
+        box-shadow: var(--shadow-md);
+
+        &:hover {
+          background: var(--bg-secondary);
+          border-color: var(--accent-primary);
+          color: var(--accent-primary);
+        }
+
+        &:active {
+          transform: scale(0.95);
+        }
+      }
+
+      &.mobile-lyrics-mode {
+        .cover-ctn {
+          display: none;
+        }
+
+        .lyrics-ctn {
+          height: calc(100dvh - 70px);
+          padding: 0;
+        }
+      }
+
+      .cover-ctn {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        flex: none;
+        padding: 0;
+        height: 100%;
+        background: var(--bg-primary);
+        z-index: 10;
+
+        &.mobile-hidden {
+          display: none;
+        }
+
+        .cover {
+          width: 65%;
+          max-width: 280px;
+        }
+      }
+
+      .lyrics-ctn {
+        position: relative;
+        flex: 1;
+        padding: 80px 0 20px;
+        z-index: 5;
+
+        &.mobile-fullscreen {
+          height: calc(100dvh - 70px);
+          padding: 0;
+          display: flex;
+          align-items: center;
+        }
+
+        .lyrics-list {
+          padding: 0 20px;
+
+          .lyric-line {
+            padding: 14px 16px;
+            font-size: 17px;
+            justify-content: center;
+            text-align: center;
+
+            &:hover {
+              transform: none;
+            }
+
+            &.active {
+              font-size: 24px;
+              color: var(--accent-primary);
+            }
+          }
+        }
+
+        .no-lyrics {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .lyrics-view {
+      .cover-ctn {
+        .cover {
+          width: 70%;
+          max-width: 240px;
+        }
+      }
+
+      .lyrics-ctn {
+        .lyrics-list {
+          padding: 0 16px;
+
+          .lyric-line {
+            padding: 12px 14px;
+            font-size: 16px;
+
+            &.active {
+              font-size: 22px;
+            }
+          }
+        }
       }
     }
   }

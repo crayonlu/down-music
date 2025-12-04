@@ -160,4 +160,26 @@
       transform: rotate(360deg);
     }
   }
+
+  @media (max-width: 480px) {
+    .custom-btn {
+      &.btn-small {
+        padding: 5px 10px;
+        font-size: 12px;
+        height: 26px;
+      }
+
+      &.btn-medium {
+        padding: 7px 14px;
+        font-size: 13px;
+        height: 34px;
+      }
+
+      &.btn-large {
+        padding: 9px 18px;
+        font-size: 14px;
+        height: 40px;
+      }
+    }
+  }
 </style>

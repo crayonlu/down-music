@@ -38,4 +38,28 @@
       transform: scale(0.95);
     }
   }
+
+  @media (max-width: 768px) {
+    .theme-toggle {
+      width: 36px;
+      height: 36px;
+
+      svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .theme-toggle {
+      width: 32px;
+      height: 32px;
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
 </style>

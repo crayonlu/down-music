@@ -183,4 +183,28 @@
       }
     }
   }
+
+  @media (max-width: 480px) {
+    .select-wrapper {
+      .select-trigger {
+        padding: 7px 10px;
+
+        .trigger-content {
+          font-size: 13px;
+        }
+
+        .arrow {
+          width: 14px;
+          height: 14px;
+        }
+      }
+    }
+
+    .select-dropdown {
+      .select-option {
+        padding: 7px 10px;
+        font-size: 13px;
+      }
+    }
+  }
 </style>

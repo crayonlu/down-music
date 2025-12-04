@@ -334,4 +334,85 @@
       }
     }
   }
+
+  @media (max-width: 768px) {
+    .music-player {
+      padding: 0 12px;
+      gap: 12px;
+      height: 70px;
+
+      .song-info {
+        flex: 0 0 auto;
+        min-width: 0;
+
+        .cover {
+          width: 45px;
+          height: 45px;
+        }
+
+        .info {
+          max-width: 120px;
+
+          .name {
+            font-size: 13px;
+          }
+
+          .artist {
+            font-size: 11px;
+          }
+        }
+      }
+
+      .controls {
+        gap: 8px;
+
+        .btn {
+          padding: 6px;
+
+          &.btn-play {
+            width: 38px;
+            height: 38px;
+          }
+        }
+      }
+
+      .progress {
+        flex: 1;
+        min-width: 0;
+
+        .time {
+          font-size: 11px;
+          min-width: 35px;
+        }
+      }
+
+      .features {
+        gap: 12px;
+
+        .volume {
+          display: none;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .music-player {
+      display: flex;
+      justify-content: space-between;
+      .song-info {
+        .info {
+          max-width: 80px;
+        }
+      }
+
+      .progress {
+        display: none;
+      }
+
+      .controls {
+        gap: 6px;
+      }
+    }
+  }
 </style>
