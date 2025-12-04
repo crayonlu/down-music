@@ -23,7 +23,17 @@
     setTimeout(updateColor, 100)
   })
 
-  const initAudio = () => {
+  const resumeContext = async () => {
+    if (audioContext && audioContext.state === 'suspended') {
+      try {
+        await audioContext.resume()
+      } catch (error) {
+        console.warn('Failed to resume audio context:', error)
+      }
+    }
+  }
+
+  const initAudio = async () => {
     const audio = document.getElementById('global-audio') as HTMLAudioElement
     if (!audio) return
 
@@ -44,10 +54,10 @@
         source = audioContext.createMediaElementSource(audio)
         source.connect(analyser)
         analyser.connect(audioContext.destination)
-      } catch {
-        // Source might already be connected
-      }
+      } catch {}
     }
+
+    await resumeContext()
   }
 
   const draw = () => {
@@ -100,6 +110,17 @@
     render()
   }
 
+  const handleVisibilityChange = () => {
+    if (document.hidden) {
+      if (animationId) {
+        cancelAnimationFrame(animationId)
+        animationId = null
+      }
+    } else {
+      if (!animationId) draw()
+    }
+  }
+
   onMounted(() => {
     updateColor()
     initAudio()
@@ -115,12 +136,24 @@
         canvasRef.value.height = canvasRef.value.offsetHeight
       }
     })
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    const audio = document.getElementById('global-audio') as HTMLAudioElement
+    if (audio) audio.addEventListener('play', resumeContext)
   })
 
   onUnmounted(() => {
     if (animationId) {
       cancelAnimationFrame(animationId)
     }
+
+    document.removeEventListener('visibilitychange', handleVisibilityChange)
+
+    const audio = document.getElementById('global-audio') as HTMLAudioElement
+    if (audio) audio.removeEventListener('play', resumeContext)
+
+    if (audioContext && audioContext.state !== 'closed') audioContext.close()
   })
 </script>
 

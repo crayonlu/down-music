@@ -234,6 +234,11 @@
         z-index: 100;
         box-shadow: var(--shadow-md);
 
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+
         &:hover {
           background: var(--bg-secondary);
           border-color: var(--accent-primary);
@@ -247,7 +252,8 @@
 
       &.mobile-lyrics-mode {
         .cover-ctn {
-          display: none;
+          visibility: hidden;
+          pointer-events: none;
         }
 
         .lyrics-ctn {
@@ -269,7 +275,8 @@
         z-index: 10;
 
         &.mobile-hidden {
-          display: none;
+          visibility: hidden;
+          pointer-events: none;
         }
 
         .cover {
@@ -320,6 +327,16 @@
 
   @media (max-width: 480px) {
     .lyrics-view {
+      .toggle-view-btn {
+        width: 40px;
+        height: 40px;
+
+        svg {
+          width: 18px;
+          height: 18px;
+        }
+      }
+
       .cover-ctn {
         .cover {
           width: 70%;

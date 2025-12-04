@@ -19,14 +19,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     background: var(--bg-elevated);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 50%;
     color: var(--text-secondary);
     cursor: pointer;
     transition: all 0.2s;
+    box-shadow: var(--shadow-md);
 
     &:hover {
       background: var(--bg-secondary);
@@ -41,24 +42,12 @@
 
   @media (max-width: 768px) {
     .theme-toggle {
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
 
       svg {
         width: 18px;
         height: 18px;
-      }
-    }
-  }
-
-  @media (max-width: 480px) {
-    .theme-toggle {
-      width: 32px;
-      height: 32px;
-
-      svg {
-        width: 16px;
-        height: 16px;
       }
     }
   }
