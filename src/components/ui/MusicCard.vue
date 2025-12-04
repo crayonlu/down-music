@@ -1,6 +1,5 @@
 <script lang="ts" setup>
   import { usePlayer } from '@/composables/usePlayer'
-  import { useSongUrl } from '@/composables/useSongUrl'
   import type { SongData } from '@/types/internal/song'
   import dayjs from 'dayjs'
   import { Download, Pause, Play, Plus, Trash2 } from 'lucide-vue-next'
@@ -20,7 +19,6 @@
   }>()
 
   const { currentSong, isPlaying, playlist, currentIndex } = usePlayer()
-  const { getSongUrl } = useSongUrl()
 
   const isCurrentSong = computed(() => {
     return (
@@ -34,38 +32,20 @@
       .format(props.song.duration >= 3600000 ? 'HH:mm:ss' : 'mm:ss')
   })
 
-  const handlePlay = async () => {
+  const handlePlay = () => {
     if (isCurrentSong.value) {
       isPlaying.value = !isPlaying.value
     } else {
-      try {
-        const songWithUrl = { ...props.song }
-
-        if (!songWithUrl.songUrl) {
-          songWithUrl.songUrl = await getSongUrl(props.song)
-        }
-
-        if (!songWithUrl.songUrl) {
-          toast.error('无法获取播放链接')
-          return
-        }
-
-        const songIndex = playlist.value.findIndex(
-          s => s.id === props.song.id && s.platform === props.song.platform,
-        )
-        if (songIndex !== -1) {
-          playlist.value[songIndex] = songWithUrl
-          currentIndex.value = songIndex
-          isPlaying.value = true
-        } else {
-          playlist.value.push(songWithUrl)
-          currentIndex.value = playlist.value.length - 1
-          isPlaying.value = true
-        }
-      } catch (error) {
-        toast.error('播放失败', {
-          description: error instanceof Error ? error.message : '未知错误',
-        })
+      const songIndex = playlist.value.findIndex(
+        s => s.id === props.song.id && s.platform === props.song.platform,
+      )
+      if (songIndex !== -1) {
+        currentIndex.value = songIndex
+        isPlaying.value = true
+      } else {
+        playlist.value.push({ ...props.song })
+        currentIndex.value = playlist.value.length - 1
+        isPlaying.value = true
       }
     }
   }
@@ -74,30 +54,13 @@
     emit('download', props.song)
   }
 
-  const handleAddToPlaylist = async () => {
+  const handleAddToPlaylist = () => {
     const exists = playlist.value.some(
       s => s.id === props.song.id && s.platform === props.song.platform,
     )
     if (!exists) {
-      try {
-        const songWithUrl = { ...props.song }
-
-        if (!songWithUrl.songUrl) {
-          songWithUrl.songUrl = await getSongUrl(props.song)
-        }
-
-        if (!songWithUrl.songUrl) {
-          toast.error('无法获取播放链接')
-          return
-        }
-
-        toast.success('已添加到播放列表')
-        playlist.value.push(songWithUrl)
-      } catch (error) {
-        toast.error('添加失败', {
-          description: error instanceof Error ? error.message : '未知错误',
-        })
-      }
+      playlist.value.push({ ...props.song })
+      toast.success('已添加到播放列表')
     } else {
       toast.info('歌曲已在播放列表中')
     }
