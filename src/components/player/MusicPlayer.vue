@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+  import DefaultCover from '@/assets/images/default-cover.jpg'
+  import LyricsModal from '@/components/player/LyricsModal.vue'
   import { usePlayer } from '@/composables/usePlayer'
   import {
     ListMusic,
@@ -11,10 +13,11 @@
     SkipForward,
     Volume2,
   } from 'lucide-vue-next'
-  import { computed } from 'vue'
+  import { computed, ref } from 'vue'
   import { useRouter } from 'vue-router'
 
   const router = useRouter()
+  const showLyrics = ref(false)
 
   const {
     currentSong,
@@ -53,12 +56,14 @@
 
 <template>
   <div v-if="currentSong" class="music-player">
+    <LyricsModal :show="showLyrics" @close="showLyrics = false" />
+
     <div class="song-info">
       <img
-        v-if="currentSong.picUrl || currentSong.album?.picUrl"
-        :src="currentSong.picUrl || currentSong.album?.picUrl"
+        :src="currentSong.picUrl || currentSong.album?.picUrl || DefaultCover"
         alt="封面"
         class="cover"
+        @click="showLyrics = !showLyrics"
       />
       <div class="info">
         <div class="name">{{ currentSong.name }}</div>
@@ -97,7 +102,12 @@
       <button class="btn btn-mode" @click="togglePlayMode">
         <component :is="playModeIcon" :size="18" />
       </button>
-      <button class="btn btn-lyrics" @click="router.push('/lyrics')" title="歌词">
+      <button
+        class="btn btn-playlist"
+        @click="
+          router.currentRoute.value.path === '/playlist' ? router.back() : router.push('/playlist')
+        "
+      >
         <ListMusic :size="18" />
       </button>
       <div class="volume">
@@ -235,29 +245,35 @@
 
         &::-webkit-slider-thumb {
           -webkit-appearance: none;
-          width: 12px;
-          height: 12px;
-          background: var(--accent-primary);
-          border-radius: 50%;
+          width: 0;
+          height: 0;
+          background: transparent;
           cursor: pointer;
-          transition: all 0.2s;
-
-          &:hover {
-            transform: scale(1.2);
-          }
         }
 
         &::-moz-range-thumb {
-          width: 12px;
-          height: 12px;
-          background: var(--accent-primary);
-          border-radius: 50%;
+          width: 0;
+          height: 0;
+          background: transparent;
           border: none;
           cursor: pointer;
-          transition: all 0.2s;
+        }
 
-          &:hover {
-            transform: scale(1.2);
+        &:hover {
+          &::-webkit-slider-thumb {
+            width: 12px;
+            height: 12px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            transition: all 0.2s;
+          }
+
+          &::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            transition: all 0.2s;
           }
         }
       }
@@ -270,6 +286,22 @@
       flex: 0 0 auto;
 
       .btn-mode {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        color: var(--text-secondary);
+        transition: all 0.2s;
+
+        &:hover {
+          color: var(--accent-primary);
+        }
+      }
+
+      .btn-playlist {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -379,10 +411,9 @@
       .progress {
         flex: 1;
         min-width: 0;
-
+        gap: 4px;
         .time {
           font-size: 11px;
-          min-width: 35px;
         }
       }
 

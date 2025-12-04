@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import { useAudioVisualizer } from '@/composables/useAudioVisualizer'
   import { useTheme } from '@/composables/useTheme'
   import { onMounted, onUnmounted, ref, watch } from 'vue'
 
@@ -7,10 +8,8 @@
   }>()
 
   const { theme } = useTheme()
+  const { initAudioContext, resumeContext, getAnalyser } = useAudioVisualizer()
   const canvasRef = ref<HTMLCanvasElement | null>(null)
-  let audioContext: AudioContext | null = null
-  let analyser: AnalyserNode | null = null
-  let source: MediaElementAudioSourceNode | null = null
   let animationId: number | null = null
   let strokeColor = '#d4a373'
 
@@ -23,44 +22,14 @@
     setTimeout(updateColor, 100)
   })
 
-  const resumeContext = async () => {
-    if (audioContext && audioContext.state === 'suspended') {
-      try {
-        await audioContext.resume()
-      } catch (error) {
-        console.warn('Failed to resume audio context:', error)
-      }
-    }
-  }
-
   const initAudio = async () => {
     const audio = document.getElementById('global-audio') as HTMLAudioElement
     if (!audio) return
-
-    if (!audioContext) {
-      const AudioContextClass =
-        window.AudioContext ||
-        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
-      audioContext = new AudioContextClass()
-    }
-
-    if (!analyser) {
-      analyser = audioContext.createAnalyser()
-      analyser.fftSize = 512
-    }
-
-    if (!source) {
-      try {
-        source = audioContext.createMediaElementSource(audio)
-        source.connect(analyser)
-        analyser.connect(audioContext.destination)
-      } catch {}
-    }
-
-    await resumeContext()
+    await initAudioContext(audio)
   }
 
   const draw = () => {
+    const analyser = getAnalyser()
     if (!canvasRef.value || !analyser) return
 
     const canvas = canvasRef.value
@@ -71,8 +40,11 @@
     const dataArray = new Uint8Array(bufferLength)
 
     const render = () => {
+      const currentAnalyser = getAnalyser()
+      if (!currentAnalyser) return
+
       animationId = requestAnimationFrame(render)
-      analyser!.getByteFrequencyData(dataArray)
+      currentAnalyser.getByteFrequencyData(dataArray)
 
       const width = canvas.width
       const height = canvas.height
@@ -125,15 +97,29 @@
     updateColor()
     initAudio()
     if (canvasRef.value) {
-      canvasRef.value.width = canvasRef.value.offsetWidth
-      canvasRef.value.height = canvasRef.value.offsetHeight
+      const container = canvasRef.value.parentElement
+      if (container) {
+        const size = Math.min(container.offsetWidth, container.offsetHeight)
+        canvasRef.value.width = size
+        canvasRef.value.height = size
+      } else {
+        canvasRef.value.width = canvasRef.value.offsetWidth
+        canvasRef.value.height = canvasRef.value.offsetHeight
+      }
       draw()
     }
 
     window.addEventListener('resize', () => {
       if (canvasRef.value) {
-        canvasRef.value.width = canvasRef.value.offsetWidth
-        canvasRef.value.height = canvasRef.value.offsetHeight
+        const container = canvasRef.value.parentElement
+        if (container) {
+          const size = Math.min(container.offsetWidth, container.offsetHeight)
+          canvasRef.value.width = size
+          canvasRef.value.height = size
+        } else {
+          canvasRef.value.width = canvasRef.value.offsetWidth
+          canvasRef.value.height = canvasRef.value.offsetHeight
+        }
       }
     })
 
@@ -144,16 +130,12 @@
   })
 
   onUnmounted(() => {
-    if (animationId) {
-      cancelAnimationFrame(animationId)
-    }
+    if (animationId) cancelAnimationFrame(animationId)
 
     document.removeEventListener('visibilitychange', handleVisibilityChange)
 
     const audio = document.getElementById('global-audio') as HTMLAudioElement
     if (audio) audio.removeEventListener('play', resumeContext)
-
-    if (audioContext && audioContext.state !== 'closed') audioContext.close()
   })
 </script>
 
@@ -164,10 +146,9 @@
 <style scoped>
   .audio-visualizer {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     z-index: 0;
     pointer-events: none;
   }

@@ -19,12 +19,6 @@ const router = createRouter({
       component: () => import('@/views/PlaylistView.vue'),
       meta: { title: '播放列表' },
     },
-    {
-      path: '/lyrics',
-      name: 'Lyrics',
-      component: () => import('@/views/LyricsView.vue'),
-      meta: { title: '歌词显示' },
-    },
   ],
 })
 

@@ -1,0 +1,9 @@
+services:
+  music-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "2999:80"
+    restart: unless-stopped
+    container_name: down-music-app
