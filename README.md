@@ -1,48 +1,63 @@
 # down-music
 
-This template should help get you started developing with Vue 3 in Vite.
+[English](./README.en.md) | 简体中文
 
-## Recommended IDE Setup
+一个集成多平台音乐搜索、播放和下载功能的网页音乐播放器。
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## 功能特性
 
-## Recommended Browser Setup
+- 多平台音乐搜索（网易云音乐、酷狗音乐）
+- 实时音频播放与可视化效果
+- 歌词显示与同步滚动
+- 播放列表管理
+- 歌曲下载功能
+- 多种播放模式（顺序播放、单曲循环、随机播放）
+- 深色/浅色主题切换
+- 响应式设计，支持移动端和桌面端
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) 
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## 技术栈
 
-## Type Support for `.vue` Imports in TS
+- Vue 3 + TypeScript
+- Vite
+- Pinia（状态管理）
+- Vue Router
+- SCSS
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
+## 项目设置
 
 ```sh
 pnpm install
 ```
 
-### Compile and Hot-Reload for Development
+### 开发环境
+
+启动前端：
 
 ```sh
 pnpm dev
 ```
 
-### Type-Check, Compile and Minify for Production
+启动后端 API：
+
+```sh
+cd backend/NeteaseCloudMusicApi
+bun start
+
+cd backend/KuGouMusicApi
+bun start
+```
+
+### 生产构建
 
 ```sh
 pnpm build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+## API 后端
 
-```sh
-pnpm lint
-```
+本项目需要两个音乐 API 后端：
+
+- [NeteaseCloudMusicApi](./backend/NeteaseCloudMusicApi) - 网易云音乐 API
+- [KuGouMusicApi](./backend/KuGouMusicApi) - 酷狗音乐 API
+
+两个 API 都需要运行才能实现完整功能。
