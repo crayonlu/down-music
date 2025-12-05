@@ -32,7 +32,7 @@ export const useFilterStore = defineStore(
     // 1014: 视频
     // 1018: 综合
     // 2000: 声音
-    const type = ref<NetEaseSearchType | KuGouSearchType>(1)
+    const type = ref<NetEaseSearchType | KuGouSearchType>('song')
 
     const searchResults = ref<SongData[]>([])
     const total = ref(0)

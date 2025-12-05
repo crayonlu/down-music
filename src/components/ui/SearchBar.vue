@@ -5,17 +5,21 @@
   import type { SongData } from '@/types/internal/song'
   import { getPlatformIcon, platformOptions } from '@/utils/platformIconMap'
   import { autoUpdate, flip, offset, shift, size, useFloating } from '@floating-ui/vue'
-  import { onBeforeUnmount, onMounted, ref } from 'vue'
+  import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
   const emit = defineEmits<{
     search: []
   }>()
 
-  const { platform, keywords, getSearchSuggest } = useFilter()
+  const { platform, keywords, getSearchSuggest, syncTypeWithPlatform } = useFilter()
   const searchSuggest = ref<SongData[] | string[]>([])
   const showSuggest = ref(false)
   const inputRef = ref<HTMLInputElement>()
   const suggestRef = ref<HTMLElement>()
+
+  watch(platform, () => {
+    syncTypeWithPlatform()
+  })
 
   const { floatingStyles } = useFloating(inputRef, suggestRef, {
     placement: 'bottom-start',

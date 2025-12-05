@@ -39,6 +39,14 @@ export function useFilter() {
     }
   }
 
+  const syncTypeWithPlatform = () => {
+    if (platform.value === 'netease' && typeof type.value === 'string') {
+      type.value = 1 as NetEaseSearchType
+    } else if (platform.value === 'kugou' && typeof type.value === 'number') {
+      type.value = 'song' as KuGouSearchType
+    }
+  }
+
   const searchMusic: () => Promise<SearchRes> = async () => {
     let result: SearchRes = { songs: [], total: 0 }
     switch (platform.value) {
@@ -154,5 +162,6 @@ export function useFilter() {
     searchResults,
     total,
     hasSearched,
+    syncTypeWithPlatform,
   }
 }
