@@ -7,7 +7,7 @@
 <template>
   <button
     class="theme-toggle"
-    @click="toggleTheme"
+    @click="toggleTheme($event)"
     :title="theme === 'light' ? '切换到暗色模式' : '切换到亮色模式'"
   >
     <Sun v-if="theme === 'dark'" :size="20" />

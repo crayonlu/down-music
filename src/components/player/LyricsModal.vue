@@ -275,6 +275,7 @@
           justify-content: center;
           align-items: center;
           width: 100%;
+          height: 100%;
           color: var(--text-secondary);
           font-size: 18px;
         }

@@ -181,12 +181,12 @@
         align-items: center;
         justify-content: center;
         padding: 8px;
-        border: 1px solid var(--border-color);
         background: var(--bg-elevated);
         color: var(--text-primary);
         border-radius: 50%;
         cursor: pointer;
         transition: all 0.2s;
+        border: 0;
 
         &:hover {
           background: var(--bg-secondary);
@@ -198,6 +198,7 @@
           background: var(--accent-primary);
           color: var(--bg-elevated);
           border-color: var(--accent-primary);
+          border: 1px solid var(--border-color);
 
           &:hover {
             background: var(--accent-hover);

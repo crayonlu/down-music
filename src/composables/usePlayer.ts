@@ -42,6 +42,7 @@ export function usePlayer() {
         } else {
           // 如果是顺序播放且已经到达最后一首歌，则回到第一首
           currentIndex.value = 0
+          isPlaying.value = false
         }
         break
     }
