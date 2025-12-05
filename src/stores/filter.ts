@@ -1,4 +1,5 @@
 import type { KuGouSearchType, NetEaseSearchType } from '@/types/apis/search'
+import type { SongData } from '@/types/internal/song'
 import type { Platform } from '@/types/platform'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -32,6 +33,11 @@ export const useFilterStore = defineStore(
     // 1018: 综合
     // 2000: 声音
     const type = ref<NetEaseSearchType | KuGouSearchType>(1)
+
+    const searchResults = ref<SongData[]>([])
+    const total = ref(0)
+    const hasSearched = ref(false)
+
     return {
       platform,
       keywords,
@@ -39,6 +45,9 @@ export const useFilterStore = defineStore(
       offset,
       type,
       currentPage,
+      searchResults,
+      total,
+      hasSearched,
     }
   },
   {

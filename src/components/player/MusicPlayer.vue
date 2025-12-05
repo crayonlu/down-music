@@ -446,4 +446,10 @@
       }
     }
   }
+
+  @media (max-width: 360px) {
+    .info {
+      display: none;
+    }
+  }
 </style>

@@ -17,7 +17,17 @@ import { storeToRefs } from 'pinia'
  */
 export function useFilter() {
   const filterStore = useFilterStore()
-  const { platform, keywords, type, currentPage, limit, offset } = storeToRefs(filterStore)
+  const {
+    platform,
+    keywords,
+    type,
+    currentPage,
+    limit,
+    offset,
+    searchResults,
+    total,
+    hasSearched,
+  } = storeToRefs(filterStore)
 
   const increasePage = () => {
     currentPage.value += 1
@@ -30,6 +40,7 @@ export function useFilter() {
   }
 
   const searchMusic: () => Promise<SearchRes> = async () => {
+    let result: SearchRes = { songs: [], total: 0 }
     switch (platform.value) {
       case 'netease':
         const neteaseRes = await NetEaseSearch(
@@ -38,7 +49,7 @@ export function useFilter() {
           offset.value,
           type.value as NetEaseSearchType,
         )
-        return {
+        result = {
           songs: neteaseRes.songs.map(song => ({
             platform: 'netease',
             id: song.id,
@@ -58,6 +69,7 @@ export function useFilter() {
           })),
           total: neteaseRes.songCount,
         }
+        break
       case 'kugou':
         const kugouRes = await KugouSearch(
           keywords.value,
@@ -65,7 +77,7 @@ export function useFilter() {
           limit.value,
           type.value as KuGouSearchType,
         )
-        return {
+        result = {
           songs: kugouRes.lists.map(song => ({
             platform: 'kugou',
             id: song.FileHash,
@@ -86,12 +98,17 @@ export function useFilter() {
           })),
           total: kugouRes.total,
         }
+        break
       default:
-        return {
+        result = {
           songs: [],
           total: 0,
         }
     }
+    searchResults.value = result.songs
+    total.value = result.total
+    hasSearched.value = true
+    return result
   }
 
   const getSearchSuggest: () => Promise<SongData[] | string[]> = async () => {
@@ -134,5 +151,8 @@ export function useFilter() {
     decreasePage,
     searchMusic,
     getSearchSuggest: debouncedGetSuggest,
+    searchResults,
+    total,
+    hasSearched,
   }
 }

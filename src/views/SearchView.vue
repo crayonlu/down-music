@@ -8,21 +8,23 @@
   import { ref } from 'vue'
   import { toast } from 'vue-sonner'
 
-  const { currentPage, increasePage, decreasePage, searchMusic } = useFilter()
+  const {
+    currentPage,
+    increasePage,
+    decreasePage,
+    searchMusic,
+    searchResults,
+    total,
+    hasSearched,
+  } = useFilter()
   const { downloadSong } = useDownload()
-  const searchResults = ref<SongData[]>([])
-  const total = ref(0)
   const loading = ref(false)
-  const hasSearched = ref(false)
   const downloading = ref(false)
 
   const handleSearch = async () => {
     loading.value = true
-    hasSearched.value = true
     try {
-      const result = await searchMusic()
-      searchResults.value = result.songs
-      total.value = result.total
+      await searchMusic()
     } catch (error) {
       toast.error('搜索失败', {
         description: error instanceof Error ? error.message : '未知错误',

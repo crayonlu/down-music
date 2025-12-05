@@ -101,7 +101,7 @@
 <template>
   <main class="all">
     <Toaster position="top-center" :theme="theme" richColors />
-    <ThemeToggle class="theme-toggle-btn" />
+    <ThemeToggle class="theme-toggle-btn" :class="{ 'has-player': !!currentSong }" />
     <audio
       id="global-audio"
       crossorigin="anonymous"
@@ -119,8 +119,13 @@
 <style scoped>
   .theme-toggle-btn {
     position: fixed;
-    top: 16px;
-    right: 16px;
+    right: 20px;
+    bottom: 20px;
     z-index: 1001;
+    transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .theme-toggle-btn.has-player {
+    bottom: 100px;
   }
 </style>
