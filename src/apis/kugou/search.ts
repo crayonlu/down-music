@@ -29,7 +29,7 @@ async function search(
 ): Promise<SearchRes> {
   const response = await apiClient('kugou').get('/search', {
     params: {
-      keyword: keywords,
+      keywords,
       page,
       pagesize,
       type,
