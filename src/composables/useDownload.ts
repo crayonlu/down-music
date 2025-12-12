@@ -1,6 +1,6 @@
 import type { SongData } from '@/types/internal/song'
 import { ref } from 'vue'
-import { useSongUrl } from './useSongUrl'
+import { useSongUrl } from '@/composables/useSongUrl'
 
 interface DownloadTask {
   song: SongData

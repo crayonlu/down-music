@@ -5,7 +5,6 @@ import { searchSuggest as NetEaseSearchSuggest } from '@/apis/netease/searchSugg
 import { useFilterStore } from '@/stores/filter'
 import type { KuGouSearchType, NetEaseSearchType } from '@/types/apis/search'
 import type { SearchRes, SongData } from '@/types/internal/song'
-import type { Platform } from '@/types/platform'
 import { useDebounceFn } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 /**
@@ -51,61 +50,20 @@ export function useFilter() {
     let result: SearchRes = { songs: [], total: 0 }
     switch (platform.value) {
       case 'netease':
-        const neteaseRes = await NetEaseSearch(
+        result = await NetEaseSearch(
           keywords.value,
           limit.value,
           offset.value,
           type.value as NetEaseSearchType,
         )
-        result = {
-          songs: neteaseRes.songs.map(song => ({
-            platform: 'netease',
-            id: song.id,
-            name: song.name,
-            picUrl: song.al.picUrl,
-            artists: song.ar.map(artist => ({
-              id: artist.id,
-              name: artist.name,
-            })),
-            album: {
-              id: song.al.id,
-              name: song.al.name,
-              picUrl: song.al.picUrl,
-            },
-            duration: song.dt,
-            songUrl: '',
-          })),
-          total: neteaseRes.songCount,
-        }
         break
       case 'kugou':
-        const kugouRes = await KugouSearch(
+        result = await KugouSearch(
           keywords.value,
           currentPage.value,
           limit.value,
           type.value as KuGouSearchType,
         )
-        result = {
-          songs: kugouRes.lists.map(song => ({
-            platform: 'kugou',
-            id: song.FileHash,
-            name: song.OriSongName,
-            picUrl: song.Image,
-            artists: song.Singers.map(artist => ({
-              id: artist.id,
-              name: artist.name,
-            })),
-            album: {
-              id: song.AlbumID,
-              name: song.AlbumName,
-              picUrl: song.Image,
-            },
-            // 这里返回的是秒 不知道为什么
-            duration: song.Duration * 1000,
-            songUrl: '',
-          })),
-          total: kugouRes.total,
-        }
         break
       default:
         result = {
@@ -123,21 +81,8 @@ export function useFilter() {
     switch (platform.value) {
       case 'netease':
         const neteaseSuggest = await NetEaseSearchSuggest(keywords.value)
-        return neteaseSuggest.songs.map(song => ({
-          platform: 'netease' as Platform,
-          id: song.id,
-          name: song.name,
-          artists: song.artists.map(artist => ({
-            id: artist.id,
-            name: artist.name,
-          })),
-          album: {
-            id: song.album.id,
-            name: song.album.name,
-          },
-          duration: song.duration,
-          songUrl: '',
-        }))
+        return neteaseSuggest
+
       case 'kugou':
         const kugouSuggest = await KugouSearchSuggest(keywords.value)
         return kugouSuggest[0]?.RecordDatas.map(record => record.HintInfo) || []

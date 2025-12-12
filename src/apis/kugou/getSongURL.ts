@@ -1,17 +1,18 @@
-import { apiClient } from '../base'
+import { apiClient } from '@/apis/base'
+import { KuGouSongQualityListSchema } from '@/apis/kugou/adapter'
 
 interface SongInfo {
-  filesize: number
-  extname: string
-  bitrate: number
-  duration: number
-  tracker_url: string[]
+  filesize?: number
+  extname?: string
+  bitrate?: number
+  duration?: number
+  tracker_url?: string[]
 }
 
 interface SongQuality {
   hash: string
   info: SongInfo
-  quality: string
+  quality?: string
 }
 
 async function getSongURL(fileHash: string): Promise<SongQuality[]> {
@@ -20,8 +21,14 @@ async function getSongURL(fileHash: string): Promise<SongQuality[]> {
       hash: fileHash,
     },
   })
-  return response.data.data
+  const raw = response.data?.data
+  const parsed = KuGouSongQualityListSchema.safeParse(raw)
+  if (!parsed.success) {
+    console.warn('Unexpected KuGou song URL response', parsed.error)
+    return []
+  }
+  return parsed.data
 }
 
 export { getSongURL }
-export type { SongQuality, SongInfo }
+export type { SongInfo, SongQuality }

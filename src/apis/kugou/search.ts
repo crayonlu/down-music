@@ -1,25 +1,7 @@
-import type { KuGouSearchType } from '../../types/apis/search'
-import { apiClient } from '../base'
-
-interface SearchRes {
-  total: number
-  lists: Array<{
-    Image: string
-    AlbumID: string
-    AlbumName: string
-    FileHash: string
-    Res: {
-      FileSize: number
-      TimeLength: number
-    }
-    Singers: Array<{
-      id: number
-      name: string
-    }>
-    Duration: number
-    OriSongName: string
-  }>
-}
+import type { SearchRes } from '@/types/internal/song'
+import type { KuGouSearchType } from '@/types/apis/search'
+import { apiClient } from '@/apis/base'
+import { KuGouSearchResultSchema, normalizeKuGouSong } from '@/apis/kugou/adapter'
 
 async function search(
   keywords: string,
@@ -35,8 +17,17 @@ async function search(
       type,
     },
   })
-  return response.data.data
+  const raw = response.data?.data
+  const parsed = KuGouSearchResultSchema.safeParse(raw)
+  if (!parsed.success) {
+    console.warn('Unexpected KuGou search response', parsed.error)
+    return { songs: [], total: 0 }
+  }
+
+  const songs = parsed.data.lists.map(normalizeKuGouSong)
+  const total = parsed.data.total ?? songs.length
+
+  return { songs, total }
 }
 
 export { search }
-export type { SearchRes }

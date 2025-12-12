@@ -1,40 +1,28 @@
-import { apiClient } from '../base'
+import { apiClient } from '@/apis/base'
+import { NetEaseSearchSuggestSchema, normalizeNetEaseSuggestSong } from '@/apis/netease/adapter'
+import type { SongData } from '@/types/internal/song'
 
-interface Artist {
-  id: number
-  name: string
-  picUrl?: string
-}
-
-interface Album {
-  id: number
-  name: string
-  artist: Artist
-  publishTime?: number
-}
-
-interface NetEaseSong {
-  id: number
-  name: string
-  artists: Artist[]
-  album: Album
-  duration: number
-}
-
-interface SearchResult {
-  songs: NetEaseSong[]
-  artists: Artist[]
-  albums: Album[]
-}
-
-async function searchSuggest(keywords: string): Promise<SearchResult> {
+async function searchSuggest(keywords: string): Promise<SongData[]> {
   const response = await apiClient('netease').get('/search/suggest', {
     params: {
       keywords,
     },
   })
-  return response.data.result
+  const raw = response.data?.result ?? response.data?.data ?? response.data
+  if (!raw) {
+    console.warn('Empty NetEase searchSuggest response', response.data)
+    return []
+  }
+  const parsed = NetEaseSearchSuggestSchema.safeParse(raw)
+  if (!parsed.success || !parsed.data) {
+    console.warn(
+      'Unexpected NetEase searchSuggest response',
+      parsed.success ? 'no data' : parsed.error,
+    )
+    return []
+  }
+  const parsedData = parsed.data
+  return (parsedData.songs ?? []).map(normalizeNetEaseSuggestSong)
 }
 
 export { searchSuggest }
-export type { NetEaseSong, Artist, Album, SearchResult }

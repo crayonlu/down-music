@@ -14,7 +14,7 @@ export function useSongUrl() {
         if (qualities.length > 0) {
           const bestQuality = qualities[0]
           if (bestQuality) {
-            return bestQuality.info.tracker_url[0] || ''
+            return bestQuality.info.tracker_url?.[0] ?? ''
           }
         }
         throw new Error('未找到可用的播放链接')

@@ -1,14 +1,15 @@
-import { apiClient } from '../base'
+import { apiClient } from '@/apis/base'
+import { KuGouSuggestResultSchema } from '@/apis/kugou/adapter'
 
 interface SuggestRecord {
   HintInfo: string
-  Hot: number
+  Hot?: number
 }
 
 interface SuggestCategory {
   RecordDatas: SuggestRecord[]
-  RecordCount: number
-  LableName: string
+  RecordCount?: number
+  LableName?: string
 }
 
 async function searchSuggest(keywords: string): Promise<SuggestCategory[]> {
@@ -17,7 +18,13 @@ async function searchSuggest(keywords: string): Promise<SuggestCategory[]> {
       keywords,
     },
   })
-  return response.data.data
+  const raw = response.data?.data
+  const parsed = KuGouSuggestResultSchema.safeParse(raw)
+  if (!parsed.success) {
+    console.warn('Unexpected KuGou searchSuggest response', parsed.error)
+    return []
+  }
+  return parsed.data as SuggestCategory[]
 }
 
 export { searchSuggest }

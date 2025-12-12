@@ -1,4 +1,5 @@
-import { apiClient } from '../base'
+import { apiClient } from '@/apis/base'
+import { NetEaseSongUrlListSchema } from '@/apis/netease/adapter'
 
 interface SongURLData {
   id: number
@@ -7,9 +8,9 @@ interface SongURLData {
   size: number
   md5: string
   code: number
-  type: string
-  level: string
-  time: number
+  type?: string
+  level?: string
+  time?: number
 }
 
 async function getSongURL(id: number, fee: number): Promise<SongURLData[]> {
@@ -20,7 +21,13 @@ async function getSongURL(id: number, fee: number): Promise<SongURLData[]> {
       level,
     },
   })
-  return response.data.data
+  const raw = response.data?.data
+  const parsed = NetEaseSongUrlListSchema.safeParse(raw)
+  if (!parsed.success) {
+    console.warn('Unexpected NetEase song URL response', parsed.error)
+    return []
+  }
+  return parsed.data
 }
 
 export { getSongURL }

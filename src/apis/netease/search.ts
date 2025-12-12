@@ -1,25 +1,7 @@
+import { apiClient } from '@/apis/base'
+import { NetEaseSearchResultSchema, normalizeNetEaseSong } from '@/apis/netease/adapter'
 import type { NetEaseSearchType } from '@/types/apis/search'
-import { apiClient } from '../base'
-interface SearchRes {
-  songs: NetEaseSong[]
-  songCount: number
-}
-
-interface NetEaseSong {
-  id: number
-  name: string
-  ar: Array<{
-    id: number
-    name: string
-  }>
-  al: {
-    id: number
-    name: string
-    picUrl: string
-  }
-  dt: number
-  fee: number
-}
+import type { SearchRes } from '@/types/internal/song'
 
 async function search(
   keywords: string,
@@ -35,7 +17,22 @@ async function search(
       type,
     },
   })
-  return response.data.result
+
+  const rawResult = response.data?.result ?? response.data?.data ?? response.data
+  if (!rawResult) {
+    console.warn('Empty NetEase search response', response.data)
+    return { songs: [], total: 0 }
+  }
+  const parsed = NetEaseSearchResultSchema.safeParse(rawResult)
+  if (!parsed.success) {
+    console.warn('Unexpected NetEase search response', parsed.error)
+    return { songs: [], total: 0 }
+  }
+
+  const songs = parsed.data.songs.map(normalizeNetEaseSong)
+  const total = parsed.data.songCount ?? parsed.data.songs.length
+
+  return { songs, total }
 }
 
-export { search, type NetEaseSong }
+export { search }

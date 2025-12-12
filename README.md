@@ -61,3 +61,8 @@ pnpm build
 - [KuGouMusicApi](./backend/KuGouMusicApi) - 酷狗音乐 API
 
 两个 API 都需要运行才能实现完整功能。
+
+## 已知问题
+
+- 部分来自酷狗音乐的资源使用 HTTP（非 HTTPS），受浏览器混合内容策略影响，可能导致页面被标记为不安全或部分资源被阻止加载。
+  - 建议：通过后端代理将资源改为 HTTPS 或将链接替换为 HTTPS，并在可能的情况下使用 CORS 代理以避免混合内容问题。

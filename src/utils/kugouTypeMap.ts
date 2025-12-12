@@ -1,4 +1,4 @@
-import type { KuGouSearchType } from '../types/apis/search'
+import type { KuGouSearchType } from '@/types/apis/search'
 
 const typeMap: Record<KuGouSearchType, string> = {
   special: '歌单',

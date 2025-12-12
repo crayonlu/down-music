@@ -1,4 +1,10 @@
-import { apiClient } from '../base'
+import { z } from 'zod'
+import { apiClient } from '@/apis/base'
+
+const KuGouLyricSearchSchema = z
+  .object({ candidates: z.array(z.object({ id: z.number(), accesskey: z.string() })).optional() })
+  .optional()
+const KuGouLyricDecodeSchema = z.object({ decodeContent: z.string().optional() }).optional()
 
 async function getPrefix(hash: string) {
   const response = await apiClient('kugou').get('/search/lyric', {
@@ -6,9 +12,14 @@ async function getPrefix(hash: string) {
       hash,
     },
   })
+  const parsed = KuGouLyricSearchSchema.safeParse(response.data)
+  if (!parsed.success || !(parsed.data?.candidates && parsed.data.candidates[0])) {
+    console.warn('Unexpected KuGou lyric search response', parsed.error)
+    return { id: 0, accesskey: '' }
+  }
   const result = {
-    id: response.data.candidates[0].id,
-    accesskey: response.data.candidates[0].accesskey,
+    id: parsed.data.candidates[0].id,
+    accesskey: parsed.data.candidates[0].accesskey,
   }
   return result
 }
@@ -20,6 +31,7 @@ async function getPrefix(hash: string) {
  */
 async function getLyrics(hash: string): Promise<string> {
   const { id, accesskey } = await getPrefix(hash)
+  if (!id || !accesskey) return ''
   const response = await apiClient('kugou').get('/lyric', {
     params: {
       id,
@@ -28,7 +40,12 @@ async function getLyrics(hash: string): Promise<string> {
       decode: 1,
     },
   })
-  return response.data.decodeContent
+  const parsed = KuGouLyricDecodeSchema.safeParse(response.data)
+  if (!parsed.success) {
+    console.warn('Unexpected KuGou lyric decode response', parsed.error)
+    return ''
+  }
+  return parsed.data?.decodeContent ?? ''
 }
 
 export { getLyrics }
