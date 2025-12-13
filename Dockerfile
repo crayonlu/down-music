@@ -58,6 +58,7 @@ COPY --from=frontend-builder /app/dist /usr/share/nginx/html
 
 COPY --from=backend-kugou /app /app/kugou
 COPY --from=backend-netease /app /app/netease
+COPY --from=backend-media-proxy /app /app/media-proxy
 
 RUN apk add --no-cache nodejs npm supervisor
 
@@ -136,9 +137,9 @@ server {
     }
     location /proxy/ {
         proxy_pass http://127.0.0.1:3003/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
     }
 }
 EOF
