@@ -43,11 +43,11 @@ FROM node:20-alpine AS backend-media-proxy
 
 WORKDIR /app
 
-COPY backend/MediaProxy/package.json pnpm-lock.yaml ./
+COPY backend/MediaProxy/package.json ./
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --prod --no-frozen-lockfile
 
 COPY backend/MediaProxy .
 
