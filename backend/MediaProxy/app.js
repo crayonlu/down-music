@@ -40,12 +40,33 @@ app.get('/proxy', async (req, res) => {
   }
 
   try {
+    console.debug(
+      'MediaProxy request headers:',
+      Object.fromEntries(
+        Object.entries(req.headers).filter(([k]) =>
+          [
+            'user-agent',
+            'referer',
+            'origin',
+            'cookie',
+            'range',
+            'accept',
+            'accept-language',
+            'accept-encoding',
+          ].includes(k),
+        ),
+      ),
+    )
     console.log('MediaProxy: incoming proxy request to', target)
     const headers = {}
     if (req.headers.range) headers.Range = req.headers.range
     if (req.headers['user-agent']) headers['user-agent'] = req.headers['user-agent']
     if (req.headers['referer']) headers.referer = req.headers['referer']
     if (req.headers['origin']) headers.origin = req.headers['origin']
+    if (req.headers.cookie) headers.cookie = req.headers.cookie
+    if (req.headers.accept) headers.accept = req.headers.accept
+    if (req.headers['accept-language']) headers['accept-language'] = req.headers['accept-language']
+    if (req.headers['accept-encoding']) headers['accept-encoding'] = req.headers['accept-encoding']
 
     const resp = await axios.get(target, {
       responseType: 'stream',
@@ -63,6 +84,9 @@ app.get('/proxy', async (req, res) => {
 
     res.status(resp.status)
     console.log('MediaProxy: proxied to', target, 'status', resp.status)
+    if (resp.status >= 400) {
+      console.warn('MediaProxy proxied response headers:', resp.headers)
+    }
     resp.data.pipe(res)
   } catch (error) {
     console.error('Proxy error:', error && error.toString ? error.toString() : error)
