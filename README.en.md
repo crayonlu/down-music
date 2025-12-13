@@ -73,8 +73,3 @@ This project requires two music API backends:
 - [KuGouMusicApi](./backend/KuGouMusicApi) - KuGou Music API
 
 Both APIs need to be running for full functionality.
-
-## Known Issues
-
-- Some resources returned by the KuGou API are served over HTTP (not HTTPS). Browser mixed content policies may flag the site as insecure or block those resources from loading.
-  - Recommendation: Use a backend proxy to rewrite resource URLs to HTTPS or replace links with HTTPS, and consider using a CORS/HTTPS proxy where applicable.

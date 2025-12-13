@@ -2,6 +2,7 @@
   import CustomBtn from '@/components/ui/CustomBtn.vue'
   import CustomSelect from '@/components/ui/CustomSelect.vue'
   import { useFilter } from '@/composables/useFilter'
+  import { useMediaProxy } from '@/composables/useMediaProxy'
   import type { SongData } from '@/types/internal/song'
   import { getPlatformIcon, platformOptions } from '@/utils/platformIconMap'
   import { autoUpdate, flip, offset, shift, size, useFloating } from '@floating-ui/vue'
@@ -37,6 +38,8 @@
       }),
     ],
   })
+
+  const { wrap } = useMediaProxy()
 
   const handleGetSuggest = async () => {
     if (keywords.value.trim()) {
@@ -115,7 +118,12 @@
             </template>
             <template v-else>
               <div class="suggest-song">
-                <img v-if="suggest.picUrl" :src="suggest.picUrl" alt="" class="suggest-cover" />
+                <img
+                  v-if="suggest.picUrl"
+                  :src="wrap(suggest.picUrl)"
+                  alt=""
+                  class="suggest-cover"
+                />
                 <div class="suggest-info">
                   <div class="suggest-name">{{ suggest.name }}</div>
                   <div class="suggest-artist">
