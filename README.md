@@ -1,4 +1,4 @@
-# down-music
+# 🎶down-music
 
 [English](./README.en.md) | 简体中文
 
@@ -51,6 +51,18 @@ bun start
 
 ```sh
 pnpm build
+```
+
+### Self-host
+
+拉取镜像并RUN RUN RUN
+
+```sh
+# 拉取镜像
+docker pull ghcr.io/crayonlu/down-music:main
+
+# Run (映射主机端口 2999 -> container的 80)
+docker run -d --name down-music-app -p 2999:80 ghcr.io/crayonlu/down-music:main
 ```
 
 ## API 后端

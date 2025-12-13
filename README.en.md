@@ -1,4 +1,4 @@
-# down-music
+# 🎶down-music
 
 English | [简体中文](./README.md)
 
@@ -51,6 +51,18 @@ bun start
 
 ```sh
 pnpm build
+```
+
+### Self-host
+
+Pull the pre-built image from the registry and run it:
+
+```sh
+# Pull pre-built image
+docker pull ghcr.io/crayonlu/down-music:main
+
+# Run container (expose port 2999 -> container's 80)
+docker run -d --name down-music-app -p 2999:80 ghcr.io/crayonlu/down-music:main
 ```
 
 ## API Backends
