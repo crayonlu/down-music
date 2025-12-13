@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+  import { useMediaProxy } from '@/composables/useMediaProxy'
   import { usePlayer } from '@/composables/usePlayer'
   import type { SongData } from '@/types/internal/song'
   import dayjs from 'dayjs'
@@ -19,6 +20,7 @@
   }>()
 
   const { currentSong, isPlaying, playlist, currentIndex } = usePlayer()
+  const { wrap } = useMediaProxy()
 
   const isCurrentSong = computed(() => {
     return (
@@ -76,7 +78,12 @@
     <div v-if="index !== undefined" class="index">{{ index + 1 }}</div>
 
     <div class="cover-wrapper">
-      <img v-if="song.album?.picUrl" :src="song.album.picUrl" :alt="song.name" class="cover" />
+      <img
+        v-if="song.album?.picUrl"
+        :src="wrap(song.album.picUrl)"
+        :alt="song.name"
+        class="cover"
+      />
       <div class="cover-overlay">
         <button class="play-btn" @click="handlePlay">
           <Pause v-if="isCurrentSong && isPlaying" :size="20" />

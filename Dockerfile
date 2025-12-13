@@ -39,12 +39,26 @@ RUN pnpm install --frozen-lockfile --prod
 COPY backend/NeteaseCloudMusicApi .
 
 
+FROM node:20-alpine AS backend-media-proxy
+
+WORKDIR /app
+
+COPY backend/MediaProxy/package.json ./
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+RUN pnpm install --prod --no-frozen-lockfile
+
+COPY backend/MediaProxy .
+
+
 FROM nginx:alpine AS production
 
 COPY --from=frontend-builder /app/dist /usr/share/nginx/html
 
 COPY --from=backend-kugou /app /app/kugou
 COPY --from=backend-netease /app /app/netease
+COPY --from=backend-media-proxy /app /app/media-proxy
 
 RUN apk add --no-cache nodejs npm supervisor
 
@@ -83,6 +97,17 @@ stdout_logfile_maxbytes=0
 stderr_logfile=/dev/stderr
 stderr_logfile_maxbytes=0
 environment=PORT=3002
+
+[program:media-proxy]
+command=node /app/media-proxy/app.js
+directory=/app/media-proxy
+autostart=true
+autorestart=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+environment=PORT=3003
 EOF
 
 COPY <<EOF /etc/nginx/conf.d/default.conf
@@ -100,10 +125,18 @@ server {
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Prefix /kugou;
     }
 
     location /netease/ {
         proxy_pass http://127.0.0.1:3002/;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Prefix /netease;
+    }
+    location /proxy {
+        proxy_pass http://127.0.0.1:3003;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;

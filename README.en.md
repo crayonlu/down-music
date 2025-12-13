@@ -74,7 +74,10 @@ This project requires two music API backends:
 
 Both APIs need to be running for full functionality.
 
-## Known Issues
+## Media proxy configuration
 
-- Some resources returned by the KuGou API are served over HTTP (not HTTPS). Browser mixed content policies may flag the site as insecure or block those resources from loading.
-  - Recommendation: Use a backend proxy to rewrite resource URLs to HTTPS or replace links with HTTPS, and consider using a CORS/HTTPS proxy where applicable.
+- `VITE_MEDIA_PROXY_URL`: It is recommended to set to the full proxy URL in production environment (for example `https://api.example.com/proxy`)
+- `VITE_MEDIA_PROXY_PREFIX`: The proxy prefix used when the front-end is deployed at a specific path prefix
+- `VITE_PROXY_IMAGES=false|true`: Whether to enable image proxy, the default is `false` (do not proxy images). When set to `true`, the frontend will replace the image link with the proxy URL.
+
+Enable image proxy locally during development: write `VITE_PROXY_IMAGES=true` to `.env` or copy it to `.env` in `env.example` and modify it.

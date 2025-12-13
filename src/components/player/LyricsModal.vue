@@ -2,6 +2,7 @@
   import DefaultCover from '@/assets/images/default-cover.jpg'
   import AudioVisualizer from '@/components/player/AudioVisualizer.vue'
   import { useLyrics } from '@/composables/useLyrics'
+  import { useMediaProxy } from '@/composables/useMediaProxy'
   import { usePlayer } from '@/composables/usePlayer'
   import { getCurrentLyricIndex } from '@/utils/lyricsParser'
   import { useElementSize } from '@vueuse/core'
@@ -42,8 +43,10 @@
     { immediate: true },
   )
 
-  const cover = computed(
-    () => currentSong.value?.picUrl || currentSong.value?.album?.picUrl || DefaultCover,
+  const { wrap } = useMediaProxy()
+
+  const cover = computed(() =>
+    wrap(currentSong.value?.picUrl || currentSong.value?.album?.picUrl || DefaultCover),
   )
 
   const lyrics = computed(() => currentSong.value?.lyrics)

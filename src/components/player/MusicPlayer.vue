@@ -1,6 +1,7 @@
 <script lang="ts" setup>
   import DefaultCover from '@/assets/images/default-cover.jpg'
   import LyricsModal from '@/components/player/LyricsModal.vue'
+  import { useMediaProxy } from '@/composables/useMediaProxy'
   import { usePlayer } from '@/composables/usePlayer'
   import {
     ListMusic,
@@ -52,6 +53,7 @@
         return Repeat
     }
   })
+  const { wrap } = useMediaProxy()
 </script>
 
 <template>
@@ -60,7 +62,7 @@
 
     <div class="song-info">
       <img
-        :src="currentSong.picUrl || currentSong.album?.picUrl || DefaultCover"
+        :src="wrap(currentSong.picUrl || currentSong.album?.picUrl || DefaultCover)"
         alt="封面"
         class="cover"
         @click="showLyrics = !showLyrics"
