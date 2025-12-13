@@ -73,3 +73,11 @@ docker run -d --name down-music-app -p 2999:80 ghcr.io/crayonlu/down-music:main
 - [KuGouMusicApi](./backend/KuGouMusicApi) - 酷狗音乐 API
 
 两个 API 都需要运行才能实现完整功能。
+
+## 媒体代理配置
+
+- `VITE_MEDIA_PROXY_URL`: 生产环境下推荐设置为完整代理 URL（例如 `https://api.example.com/proxy`）
+- `VITE_MEDIA_PROXY_PREFIX`: 当前端部署在特定路径前缀时使用的代理前缀
+- `VITE_PROXY_IMAGES=false|true`: 是否启用图片代理，默认 `false`（不代理图片）。设为 `true` 后，前端会使用代理 URL 替换图片链接。
+
+开发时在本地启用图片代理：将 `VITE_PROXY_IMAGES=true` 写入 `.env` 或在 `env.example` 中复制为 `.env` 并修改。

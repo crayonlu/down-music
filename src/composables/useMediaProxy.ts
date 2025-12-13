@@ -1,9 +1,13 @@
 export function useMediaProxy() {
   const MEDIA_PROXY_URL = (import.meta.env.VITE_MEDIA_PROXY_URL as string) || ''
   const MEDIA_PROXY_PREFIX = (import.meta.env.VITE_MEDIA_PROXY_PREFIX as string) || ''
+  const PROXY_IMAGES =
+    ((import.meta.env.VITE_PROXY_IMAGES as string) || 'false').toLowerCase() === 'true'
 
   function wrap(rawUrl?: string | null) {
     if (!rawUrl) return ''
+    // If image proxying is disabled, return the raw url.
+    if (!PROXY_IMAGES) return rawUrl
     const lower = rawUrl.toLowerCase()
     if (lower.startsWith('blob:') || lower.startsWith('/') || lower.includes('/proxy?url='))
       return rawUrl
